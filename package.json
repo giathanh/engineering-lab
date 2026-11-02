@@ -1,0 +1,14 @@
+{
+  "name": "engineering-lab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Ôn tập Senior Fullstack (PHP · Node.js · React/Vue)",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/build.mjs && npx --yes serve dist"
+  },
+  "dependencies": {
+    "marked": "^15.0.0"
+  }
+}
