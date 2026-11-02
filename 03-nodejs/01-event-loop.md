@@ -7,7 +7,7 @@
 - JavaScript trong một isolate Node.js thực thi trên một main thread; event loop điều phối callback, không biến mọi công việc thành song song.
 - I/O thường được giao cho hệ điều hành hoặc libuv; callback được đưa lại vào loop khi hoàn tất.
 - Vòng lặp libuv có các phase như timers, pending callbacks, poll, check và close callbacks. Thứ tự quan sát được còn phụ thuộc thời điểm callback được lập lịch.
-- Promise jobs (microtasks) chạy sau đoạn JavaScript hiện tại; `process.nextTick()` có hàng đợi riêng được ưu tiên cao hơn, vì vậy dùng đệ quy có thể làm đói event loop.
+- Promise jobs (microtasks) chạy sau đoạn JavaScript hiện tại; `process.nextTick()` có hàng đợi riêng thường được drain trước Promise microtasks sau callback thông thường (ESM top-level có ngoại lệ như ví dụ), vì vậy dùng đệ quy có thể làm đói event loop.
 - `setImmediate()` chạy ở phase check; `setTimeout(fn, 0)` chỉ đặt ngưỡng thời gian tối thiểu, không bảo đảm chạy ngay.
 
 ## 2. Khái niệm cốt lõi
@@ -55,7 +55,7 @@ readFile(new URL(import.meta.url), () => {
 });
 ```
 
-Sau `sync`, `nextTick` được xử lý trước microtask queue; các microtasks khác chạy FIFO theo thứ tự được xếp. Trong I/O callback, `setImmediate` thường chạy trong phase check kế tiếp trước timer. Chạy thực tế để quan sát trên đúng Node version thay vì dựa vào một output cố định.
+Ví dụ dùng ESM (`import`), nên top-level evaluation đã chạy trong microtask context: output đầu là `sync`, `microtask`, `promise`, rồi `nextTick`. Nếu đổi sang CJS top-level tương đương, thứ tự là `sync`, `nextTick`, `microtask`, `promise`. Không suy ra quy tắc “nextTick luôn trước Promise” từ một context. Trong I/O callback, `setImmediate` thường chạy trong phase check kế tiếp trước timer. Chạy thực tế để quan sát trên đúng Node version thay vì dựa vào một output cố định.
 
 Ví dụ sai thường gặp là tạo chuỗi `process.nextTick` vô hạn: mỗi callback tiếp tục đổ thêm công việc vào hàng đợi ưu tiên, khiến poll không có cơ hội phục vụ I/O. Dùng `setImmediate` hoặc chia nhỏ công việc theo lô để nhường quyền điều khiển.
 
@@ -94,7 +94,7 @@ Microtasks được drain sau stack/callback hiện tại trước khi tiếp t�
 <details>
 <summary><b>Q3. `process.nextTick` khác `queueMicrotask` ra sao?</b></summary>
 
-`nextTick` dùng hàng đợi riêng của Node và được xử lý trước microtasks thông thường trong các điểm checkpoint. Cả hai đều cần tránh đệ quy dài vì có thể làm đói event loop.
+`nextTick` dùng hàng đợi riêng của Node, thường được drain trước Promise microtasks sau callback thông thường. Tuy nhiên ESM top-level đang chạy trong microtask context nên microtasks đã xếp có thể chạy trước nextTick. Cả hai đều cần tránh đệ quy dài vì có thể làm đói event loop.
 
 </details>
 
@@ -130,3 +130,5 @@ Theo dõi event-loop delay/utilization cùng latency percentile, CPU và through
 - [Node.js API: `process.nextTick()`](https://nodejs.org/api/process.html#processnexttickcallback-args)
 - [Node.js API: `setImmediate()` và timers](https://nodejs.org/api/timers.html)
 - [libuv design: event loop](https://docs.libuv.org/en/v1.x/design.html)
+
+- [Node.js: nextTick và queueMicrotask trong CJS/ESM](https://nodejs.org/api/process.html#when-to-use-queuemicrotask-vs-processnexttick)

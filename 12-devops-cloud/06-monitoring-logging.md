@@ -26,17 +26,17 @@ Prometheus alert rule cho high error ratio; labels bounded và threshold cần t
 
 ```yaml
 groups:
-	- name: api-slo
-		rules:
-			- alert: HighApiErrorRate
-				expr: |
-					sum(rate(http_requests_total{status=~"5.."}[5m]))
-					/ sum(rate(http_requests_total[5m])) > 0.02
-				for: 10m
-				labels:
-					severity: page
-				annotations:
-					summary: API error ratio exceeds 2%
+  - name: api-slo
+    rules:
+      - alert: HighApiErrorRate
+        expr: |
+          sum(rate(http_requests_total{status=~"5.."}[5m]))
+          / sum(rate(http_requests_total[5m])) > 0.02
+        for: 10m
+        labels:
+          severity: page
+        annotations:
+          summary: API error ratio exceeds 2%
 ```
 
 Low traffic may make ratio noisy; combine minimum request volume and multi-window burn-rate checks.
@@ -50,9 +50,7 @@ Low traffic may make ratio noisy; combine minimum request volume and multi-windo
 - Alert on SLO burn/customer symptoms; include owner, runbook, dashboard and clear action.
 - Separate dashboards for service health, dependencies, capacity and business signals; avoid metric vanity.
 - Track ingestion drop rates, scrape failures, storage retention and alert delivery health.
-- Track ingestion drop rates, scrape failures, storage retention and alert delivery health.
 - Thiết kế dashboard theo câu hỏi: user đang gặp gì, dependency nào gây ra và change nào vừa deploy. Tách overview khỏi diagnostic panels, dùng annotations cho releases/incidents và link trace từ exemplar/log để rút ngắn path điều tra.
-- Alert fatigue giảm khi deduplicate theo service/region, group correlated symptoms và page theo burn-rate windows. Non-paging alerts vẫn cần ticket/owner nhưng không nên làm nhiễu on-call; diễn tập alert delivery để chắc chắn escalation channel hoạt động.
 - Alert fatigue giảm khi deduplicate theo service/region, group correlated symptoms và page theo burn-rate windows. Non-paging alerts vẫn cần ticket/owner nhưng không nên làm nhiễu on-call; diễn tập alert delivery để chắc chắn escalation channel hoạt động.
 - Mỗi alert nên link runbook chỉ rõ safe mitigation, verification queries và escalation owner; dashboards không nên yêu cầu người trực nhớ metric names. Sau incident, rà lại liệu signal có phát hiện đúng user impact và liệu sampling/retention có giữ đủ evidence.
 

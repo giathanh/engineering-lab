@@ -12,7 +12,7 @@
 
 ## 2. Khái niệm cốt lõi
 
-ES6+ đưa vào `let/const`, arrow functions, template literals, destructuring, rest/spread, modules, classes, Promise và generators; các phiên bản sau thêm optional chaining (`?.`), nullish coalescing (`??`), logical assignment và structured clone platform API. `||` dùng truthiness nên `0`, `false`, `''` có thể fallback; `??` chỉ fallback khi null/undefined.
+ES6+ đưa vào `let/const`, arrow functions, template literals, destructuring, rest/spread, modules, classes, Promise và generators; các phiên bản sau thêm optional chaining (`?.`), nullish coalescing (`??`) và logical assignment. `structuredClone` là Web/platform API có trong các runtime hỗ trợ, không phải cú pháp hay built-in được ECMAScript định nghĩa. `||` dùng truthiness nên `0`, `false`, `''` có thể fallback; `??` chỉ fallback khi null/undefined.
 
 Object/array trong JavaScript là reference values. `const settings = {}` ngăn reassign biến `settings`, nhưng cho phép `settings.theme = ...`. Spread `{...source}`/`[...items]` tạo shallow copy: nested objects vẫn cùng reference. Immutable update phải copy mọi parent node trên path, giữ các nhánh không đổi bằng structural sharing. Deep clone bằng JSON stringify/parse làm mất `undefined`, Date type, Map/Set, BigInt, circular graph và special values.
 
@@ -75,7 +75,7 @@ Shallow copy tạo container mới nhưng giữ references tới nested values; 
 <details>
 <summary><b>Q2. Spread syntax có clone object không?</b></summary>
 
-Nó tạo object/array mới ở tầng ngoài bằng enumerable own properties; không clone prototypes, nested references hoặc mọi property descriptors.
+Object spread sao chép enumerable own properties, còn array spread tiêu thụ iterator của nguồn; cả hai tạo container mới ở tầng ngoài; không clone prototypes, nested references hoặc mọi property descriptors.
 
 </details>
 

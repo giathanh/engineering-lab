@@ -40,7 +40,6 @@ Result (20 sec): Error rate returned to baseline in [time]; added canary gate an
 - Khi interviewer hỏi hypothetical, không ép STAR; giải thích decision framework và ask clarifying questions.
 - Dùng failure story có accountability, mitigation, learning và changed process; không chọn failure có unresolved blame.
 - Practice concise answers aloud and leave room for probing; clarify your exact role on team achievements.
-- Practice concise answers aloud and leave room for probing; clarify your exact role on team achievements.
 - Chuẩn bị biến thể cùng story cho follow-up “what would you do differently?” bằng evidence mới, không đổi lịch sử cho hợp câu hỏi. Nếu interviewer yêu cầu detail, mở rộng Action/decision; nếu họ chuyển chủ đề, kết thúc gọn thay cố dùng hết câu chuyện đã chuẩn bị.
 
 ## 5. Lỗi thường gặp / Pitfalls
@@ -97,10 +96,10 @@ Cho thấy lắng nghe, hỏi cụ thể, thử thay đổi, nhận feedback loo
 
 </details>
 
-## 7. Ứng dụng vào CV
+## 7. Áp dụng thực tế
 
-- Xây story bank STAR cho **[N]** competencies với outcomes có evidence, tăng interview-to-onsite conversion **[A]%**.
-- Luyện concise incident/conflict stories, giảm answer duration **[A]%** mà vẫn nêu rõ ownership, metrics và learning.
+- Lập story bank gồm incident, conflict, failure, mentoring và quyết định có trade-off; ghi rõ đóng góp cá nhân cùng kết quả của team.
+- Thu âm một câu trả lời khoảng 1–2 phút, rồi luyện follow-up về evidence và điều sẽ làm khác; không bịa tỷ lệ đậu phỏng vấn để làm đẹp CV.
 
 ## 8. Tài liệu tham khảo
 

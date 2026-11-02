@@ -20,9 +20,11 @@ Data cache, full route cache, router cache và browser/CDN cache là lớp khác
 
 ## 3. Code ví dụ
 
-Server Component page với params dạng Promise (App Router hiện đại) và fetch policy rõ ràng; URL/API phụ thuộc app.
+Server Component page theo Next.js 15 App Router (chưa bật Cache Components) với params dạng Promise và fetch policy rõ ràng; URL/API phụ thuộc app.
 
 ```tsx
+import { notFound } from 'next/navigation';
+
 type Product = { id: string; name: string };
 
 export default async function ProductPage({
@@ -31,9 +33,10 @@ export default async function ProductPage({
 	params: Promise<{ id: string }>;
 }) {
 	const { id } = await params;
-	const response = await fetch(`https://api.example.test/products/${id}`, {
+	const response = await fetch(`https://api.example.test/products/${encodeURIComponent(id)}`, {
 		next: { revalidate: 60 },
 	});
+	if (response.status === 404) notFound();
 	if (!response.ok) throw new Error('Unable to load product');
 
 	const product = (await response.json()) as Product;
@@ -118,3 +121,5 @@ Không để response chia sẻ giữa users/tenants. Dùng cache policy/key iso
 - [Next.js: Server and Client Components](https://nextjs.org/docs/app/getting-started/server-and-client-components)
 - [Next.js: Caching](https://nextjs.org/docs/app/deep-dive/caching)
 - [Google Search Central: SEO Starter Guide](https://developers.google.com/search/docs/fundamentals/seo-starter-guide)
+
+- [Next.js 15: upgrade guide](https://nextjs.org/docs/app/guides/upgrading/version-15)

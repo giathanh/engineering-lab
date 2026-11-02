@@ -29,23 +29,37 @@ import { ref, watch } from 'vue'
 function useSearch() {
 	const query = ref('')
 	const results = ref<string[]>([])
+	const error = ref<string | null>(null)
 
 	watch(query, async (value, _oldValue, onCleanup) => {
+		error.value = null
 		const controller = new AbortController()
 		onCleanup(() => controller.abort())
 		if (!value.trim()) { results.value = []; return }
-		const response = await fetch(`/api/search?q=${encodeURIComponent(value)}`, { signal: controller.signal })
-		results.value = await response.json() as string[]
+		try {
+			const response = await fetch(`/api/search?q=${encodeURIComponent(value)}`, { signal: controller.signal })
+			if (!response.ok) throw new Error(`HTTP ${response.status}`)
+			const payload: unknown = await response.json()
+			if (!Array.isArray(payload) || !payload.every((item) => typeof item === 'string')) {
+				throw new TypeError('Expected a string array')
+			}
+			if (!controller.signal.aborted) results.value = payload
+		} catch (cause) {
+			if (!controller.signal.aborted) {
+				results.value = []
+				error.value = cause instanceof Error ? cause.message : 'Search failed'
+			}
+		}
 	})
 
-	return { query, results }
+	return { query, results, error }
 }
 
-const { query, results } = useSearch()
+const { query, results, error } = useSearch()
 </script>
 ```
 
-Production code should validate response shape and handle network errors; composable owns cancellation but application decides error UI.
+Composable validate response, bỏ qua kết quả request đã bị hủy và expose lỗi để component quyết định UI; có thể thêm debounce và loading state theo nhu cầu.
 
 ## 4. Trade-off & Best practices
 
@@ -55,7 +69,6 @@ Production code should validate response shape and handle network errors; compos
 - Trả refs khi caller cần destructure; trả plain object derived values có thể làm người dùng nhầm mất reactivity.
 - Dùng lifecycle hooks trong setup context; composable nên được gọi đồng bộ trong setup để Vue associate cleanup với instance.
 - Với shared cross-component state, chọn Pinia/provide/inject theo scope; không biến module singleton thành global mutable state tùy tiện.
-- Migration có thể incrementally chuyển mixins sang composables; giữ public props/events contract ổn định.
 - Migration có thể incrementally chuyển mixins sang composables; giữ public props/events contract ổn định.
 - Khi review composable, kiểm tra nó có side effect lúc gọi hay chỉ expose command; call order và lifecycle ownership nên thể hiện rõ. Với SSR, mọi mutable state theo user phải thuộc request/app instance, không module singleton.
 

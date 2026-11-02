@@ -54,8 +54,6 @@ Không copy `.env`/credentials; inject runtime secrets từ secret manager/orche
 - Resource requests phản ánh normal needs, limits theo overload protection; monitor throttling/OOM/restarts.
 - Labels/selectors/namespaces/RBAC/network policies có ownership; Secret access tối thiểu và encryption at rest.
 - Keep state external/persistent volumes deliberately; deploy rolling with backward-compatible app/schema versions.
-- Keep state external/persistent volumes deliberately; deploy rolling with backward-compatible app/schema versions.
-- Ứng dụng container nên xử lý SIGTERM, ngừng nhận work mới, drain requests và flush dữ liệu trong termination grace period. Log ra stdout/stderr để platform thu thập; file log bên trong container thường biến mất khi pod bị replace.
 - Ứng dụng container nên xử lý SIGTERM, ngừng nhận work mới, drain requests và flush dữ liệu trong termination grace period. Log ra stdout/stderr để platform thu thập; file log bên trong container thường biến mất khi pod bị replace.
 - Không dùng floating base tag trong release build nếu cần reproducibility; pin digest hoặc update cadence có kiểm soát và rebuild để nhận security patches. Với multi-architecture deployments, kiểm tra image manifest và native dependencies trên target architecture.
 
@@ -108,7 +106,7 @@ Build toolchain không cần trong runtime, giúp image nhỏ hơn, attack surfa
 
 ## 7. Ứng dụng vào CV
 
-- Giảm container image **[A]%** bằng multi-stage/non-root builds, cải thiện deploy time **[B]%** và đóng **[C]** high-risk findings.
+- Giảm container image **[A]%** bằng multi-stage builds và tách build tools; chuyển runtime sang non-root, cải thiện deploy time **[B]%** và đóng **[C]** high-risk findings.
 - Thiết kế Kubernetes probes/resources/rolling rollout cho **[N]** services, đạt availability **[A]%** khi deploy.
 
 ## 8. Tài liệu tham khảo

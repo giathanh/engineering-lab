@@ -39,6 +39,10 @@ function parseProfile(input) {
 		throw new TypeError('Invalid displayName');
 	}
 
+	if (input.locale !== undefined && !['en', 'vi'].includes(input.locale)) {
+		throw new TypeError('Invalid locale');
+	}
+
 	// Construct a fresh object rather than merging untrusted keys into configuration.
 	return { displayName: input.displayName, locale: input.locale ?? 'en' };
 }

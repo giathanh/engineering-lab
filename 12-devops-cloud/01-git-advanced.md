@@ -26,8 +26,10 @@ Quy trình rebase local feature branch lên main, kiểm tra trước khi cập 
 git fetch origin
 git switch feature/order-export
 git rebase origin/main
-# Resolve conflicts, then continue only after reviewing the diff.
-git rebase --continue
+# Only if rebase stops with conflicts: resolve, then stage the resolved files.
+# git add <resolved-files>
+# git rebase --continue
+# To abandon an in-progress rebase: git rebase --abort
 git status
 git log --oneline --graph --decorate -12
 ```
@@ -43,8 +45,6 @@ Nếu branch đã publish/shared, phối hợp trước rewrite; khi được ch
 - Commit generated files/lockfiles theo policy; không commit secrets/build artifacts ngoài chủ đích.
 - Conventional Commits hữu ích cho automation; giữ project convention và message nêu behavior change.
 - Dùng signed commits/tags hoặc protected branches theo supply-chain/governance requirements.
-- Dùng signed commits/tags hoặc protected branches theo supply-chain/governance requirements.
-- Khi history gặp sự cố, `git bisect` tìm commit gây regression bằng test/command tự động; `git reflog` có thể khôi phục ref vừa reset/rebase. Trước thao tác destructive, tạo branch/tag backup để recovery không phụ thuộc vào reflog retention.
 - Khi history gặp sự cố, `git bisect` tìm commit gây regression bằng test/command tự động; `git reflog` có thể khôi phục ref vừa reset/rebase. Trước thao tác destructive, tạo branch/tag backup để recovery không phụ thuộc vào reflog retention.
 - Chọn `revert` khi cần undo một commit đã chia sẻ vì nó tạo commit ngược, giữ history audit; `reset` di chuyển branch ref và phù hợp local unpublished work. Khi conflict, đọc cả base/ours/theirs và chạy tests liên quan thay vì chọn một phía chỉ để Git báo clean.
 

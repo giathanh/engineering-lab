@@ -12,7 +12,22 @@
 
 ## 2. Khái niệm cốt lõi
 
-OWASP Top 10 phiên bản 2021 gồm Broken Access Control, Cryptographic Failures, Injection, Insecure Design, Security Misconfiguration, Vulnerable/Outdated Components, Identification/Authentication Failures, Software/Data Integrity Failures, Logging/Monitoring Failures và SSRF. Đây là nhóm rủi ro tổng hợp; phiên bản mới có thể thay đổi, nên dùng official current source.
+Bài dùng **OWASP Top 10:2025** (đối chiếu ngày 02/11/2026):
+
+| Mã | Nhóm rủi ro |
+|---|---|
+| A01 | Broken Access Control |
+| A02 | Security Misconfiguration |
+| A03 | Software Supply Chain Failures |
+| A04 | Cryptographic Failures |
+| A05 | Injection |
+| A06 | Insecure Design |
+| A07 | Authentication Failures |
+| A08 | Software or Data Integrity Failures |
+| A09 | Security Logging and Alerting Failures |
+| A10 | Mishandling of Exceptional Conditions |
+
+SQLi, XSS, CSRF, SSRF và IDOR là các kiểu lỗ hổng, không phải năm mục độc lập trong Top 10. Không dùng thứ tự/mã của bản 2021 cho bản 2025; SSRF được gộp vào Broken Access Control. A10 nhấn mạnh xử lý lỗi/điều kiện bất thường an toàn: không fail-open authorization, không nuốt lỗi rồi báo thành công, cleanup tài nguyên và kiểm soát resource exhaustion.
 
 Broken access control/IDOR: user đổi identifier để truy cập object không thuộc quyền. Kiểm tra authorization ở server/data layer với principal + object + action; UUID khó đoán không phải authorization. Injection xảy ra khi data trở thành code/query; parameterize values, không ghép SQL/shell/template. XSS là untrusted content thực thi trong browser context; encode theo HTML/attribute/JS/URL context và tránh `innerHTML`.
 
@@ -47,7 +62,6 @@ if ($project === false) {
 - CSRF tokens, SameSite cookies, Origin/Referer validation và safe HTTP methods cần kết hợp theo client architecture.
 - SSRF defense ở cả application egress và network layer; allowlist trusted targets, kiểm tra redirects và DNS rebinding risk.
 - Cập nhật dependencies/images, pin lockfiles, scan CI/SBOM và review permissions/scripts.
-- Security headers/CSP, rate limits, secure cookie flags, secrets rotation và audit logging làm defense-in-depth.
 - Security headers/CSP, rate limits, secure cookie flags, secrets rotation và audit logging làm defense-in-depth.
 - Threat model nên được cập nhật khi thêm trust boundary, upload/import feature, webhook, AI/tool integration hoặc admin workflow. Ghi abuse cases cùng security owner/review date để controls không chỉ tồn tại trong checklist ban đầu.
 
@@ -110,3 +124,5 @@ Allowlist destination, resolve/check IP, xử lý redirects, restrict schemes v�
 - [OWASP SSRF Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html)
 - [MDN: CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)
 
+
+- [OWASP Top 10:2025 — danh sách chính thức](https://top10.owasp.org/2025/)

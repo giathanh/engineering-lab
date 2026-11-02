@@ -5,7 +5,7 @@
 ## 1. Tóm tắt nhanh (TL;DR)
 
 - PHP values thường dùng reference counting; cycle collector tìm vòng reference không thể thu hồi chỉ bằng refcount.
-- Copy-on-write cho phép chia sẻ zval/payload cho đến khi một bên mutate; “gán array” không nhất thiết copy toàn bộ ngay lập tức.
+- Copy-on-write cho phép chia sẻ backing payload của array/string cho đến khi một bên mutate; “gán array” không nhất thiết copy toàn bộ ngay lập tức.
 - Generator (`yield`) phát value từng bước, giữ state cần thiết thay vì materialize toàn bộ iterable.
 - Xử lý file lớn theo stream/chunk/generator và đặt giới hạn batch; streaming chỉ có ích nếu consumer không giữ mọi result.
 - Trong long-running worker, memory có thể tăng do retained references, cache/ORM state, extension allocation hoặc fragmentation; đo RSS/peak và cleanup đúng lifecycle.
@@ -14,7 +14,7 @@
 
 Zend Engine quản lý zval và heap allocation. Reference counting tăng/giảm theo số tham chiếu; khi count về zero, giá trị có thể được giải phóng. Object/array có thể chứa reference vòng (`A -> B -> A`), khi đó refcount không về zero. Cycle collector phát hiện các candidate cycle để thu hồi; `gc_collect_cycles()` có thể hữu ích trong chẩn đoán/batch, không nên gọi tùy tiện mỗi request.
 
-Copy-on-write giảm copy eager: biến mới có thể chia sẻ backing data cho đến khi một bên thay đổi. Mutation có thể tạo copy và tăng memory/time đột ngột; passing large arrays qua nhiều tầng có thể vẫn rẻ nếu chỉ đọc, nhưng biến đổi có thể kích hoạt copy. `memory_get_usage()`/`memory_get_peak_usage()` cung cấp dữ liệu allocator PHP; RSS của process còn bao gồm native allocations và memory allocator giữ lại.
+Copy-on-write giảm copy eager: biến mới có thể chia sẻ backing data cho đến khi một bên thay đổi. Object assignment chia sẻ cùng object handle, không copy-on-write; cần `clone` nếu muốn bản object riêng (mặc định vẫn shallow). Mutation của array/string có thể tạo copy và tăng memory/time đột ngột; passing large arrays qua nhiều tầng có thể vẫn rẻ nếu chỉ đọc, nhưng biến đổi có thể kích hoạt copy. `memory_get_usage()`/`memory_get_peak_usage()` cung cấp dữ liệu allocator PHP; RSS của process còn bao gồm native allocations và memory allocator giữ lại.
 
 Generator là stateful iterator tạm dừng tại `yield`, tiếp tục khi consumer yêu cầu phần tử tiếp theo. Nó giảm peak memory khi nguồn có thể đọc tăng dần. Tuy nhiên, nếu consumer gom tất cả vào array, lợi ích mất; generator cũng là one-pass và exceptions phát sinh ở lúc iteration chứ không nhất thiết khi tạo generator.
 
@@ -29,6 +29,7 @@ declare(strict_types=1);
 function rowsFromCsv(string $path): Generator
 {
 	$file = new SplFileObject($path, 'r');
+	$file->setCsvControl(',', '"', ''); // Explicit escape; avoid deprecated default on PHP 8.4+.
 	$file->setFlags(SplFileObject::READ_CSV | SplFileObject::SKIP_EMPTY);
 	$headers = null;
 
@@ -39,6 +40,9 @@ function rowsFromCsv(string $path): Generator
 		if ($headers === null) {
 			$headers = $row;
 			continue;
+		}
+		if (count($headers) !== count($row)) {
+			throw new UnexpectedValueException('CSV row has a different column count');
 		}
 		yield array_combine($headers, $row); // Consumer processes one row at a time.
 	}
@@ -126,3 +130,4 @@ Benchmark memory, DB round trips, lock duration, retry/rollback cost và through
 - [PHP: Memory management](https://www.php.net/manual/en/features.gc.refcounting-basics.php)
 - [PHP: SplFileObject](https://www.php.net/manual/en/class.splfileobject.php)
 
+- [PHP: CSV escape configuration](https://www.php.net/manual/en/splfileobject.setcsvcontrol.php)

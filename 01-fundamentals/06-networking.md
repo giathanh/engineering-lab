@@ -12,7 +12,7 @@
 
 ## 2. Khái niệm cốt lõi
 
-Khi client gọi `https://api.example.com`, resolver tra DNS records (cache có TTL), lấy IP, rồi thiết lập transport connection. TCP three-way handshake tạo kết nối đáng tin cậy, có thứ tự; TLS handshake thương lượng cipher, xác thực certificate/hostname và tạo session keys. TLS có thể được tái sử dụng/resumed; proxy/load balancer có thể kết thúc TLS tại một hop, nên trust boundary cần rõ.
+Khi client gọi `https://api.example.com`, resolver tra DNS records (cache có TTL), lấy IP, rồi thiết lập transport connection (TCP cho HTTP/1.1 và HTTP/2; QUIC cho HTTP/3). Với TCP, three-way handshake tạo kết nối đáng tin cậy, có thứ tự; TLS handshake thương lượng cipher, xác thực certificate/hostname và tạo session keys. TLS có thể được tái sử dụng/resumed; proxy/load balancer có thể kết thúc TLS tại một hop, nên trust boundary cần rõ.
 
 HTTP là application protocol, độc lập với business semantics. HTTP/1.1 dùng text-based messages, persistent connections và có thể gặp head-of-line blocking ở tầng request/response trên một connection; clients thường mở nhiều connections. HTTP/2 dùng binary framing, multiplex streams và HPACK header compression. Tuy nhiên, các stream chung một TCP connection, nên packet loss làm TCP chờ retransmission trước khi giao byte tiếp theo (transport-level head-of-line blocking).
 
@@ -27,7 +27,7 @@ flowchart TD
 	Conn --> App
 ```
 
-WebSocket bắt đầu bằng HTTP handshake rồi nâng cấp thành kênh full-duplex; phù hợp chat/collaboration cần client và server gửi chủ động. SSE giữ HTTP response mở, server gửi event dạng text theo một chiều, browser tự reconnect; phù hợp notification/feed. Cả hai cần heartbeat, reconnect/backoff, authorization, load balancer timeout và chiến lược scale nhiều instance.
+WebSocket qua HTTP/1.1 dùng Upgrade handshake; qua HTTP/2 và HTTP/3 có thể dùng extended CONNECT trên một stream khi hai phía hỗ trợ (RFC 8441/9220). Sau handshake, WebSocket cung cấp kênh full-duplex; phù hợp chat/collaboration cần client và server gửi chủ động. SSE giữ HTTP response mở, server gửi event dạng text theo một chiều, browser tự reconnect; phù hợp notification/feed. Cả hai cần heartbeat, reconnect/backoff, authorization, load balancer timeout và chiến lược scale nhiều instance.
 
 ## 3. Code ví dụ
 
@@ -48,19 +48,20 @@ const server = createServer((request, response) => {
 		Connection: 'keep-alive',
 	});
 
+	response.flushHeaders();
 	let timer;
 	const resume = () => {
 		timer = setInterval(sendEvent, 1000);
 	};
 	const sendEvent = () => {
-		if (!response.write(`data: ${JSON.stringify({ time: Date.now() })}\\n\\n`)) {
+		if (!response.write(`data: ${JSON.stringify({ time: Date.now() })}\n\n`)) {
 			clearInterval(timer);
 			response.once('drain', resume);
 		}
 	};
 
 	timer = setInterval(sendEvent, 1000);
-	request.on('close', () => {
+	response.on('close', () => {
 		clearInterval(timer);
 		response.off('drain', resume);
 	});
@@ -144,3 +145,8 @@ Network có thể chậm/mất response sau khi server đã xử lý. Timeout gi
 - [RFC 9000: QUIC](https://www.rfc-editor.org/rfc/rfc9000)
 - [MDN: Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events)
 
+
+- [WHATWG: Server-sent events — framing bằng dòng trống](https://html.spec.whatwg.org/multipage/server-sent-events.html)
+- [Node.js HTTP: ServerResponse close](https://nodejs.org/api/http.html#event-close_2)
+- [RFC 8441: WebSockets over HTTP/2](https://www.rfc-editor.org/rfc/rfc8441)
+- [RFC 9220: WebSockets over HTTP/3](https://www.rfc-editor.org/rfc/rfc9220)

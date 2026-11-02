@@ -18,7 +18,7 @@ Error handling có nhiều boundary: HTTP request cần status/body; CLI cần s
 
 Logging khác debugging output. Structured logs nên có timestamp, severity, service/version, correlation/trace ID, operation và context có kiểm soát. PSR-3 định nghĩa method `debug` đến `emergency` và placeholder context; implementation quyết định destination/format. Exception log cần stack/cause ở nơi có đủ context, nhưng client nhận thông báo an toàn. Metrics/traces bổ sung dimension và causal path; log không nên là metric counter duy nhất.
 
-PHP error reporting (`error_reporting`, `display_errors`, `log_errors`) cấu hình môi trường. Production không hiển thị error detail cho user; ghi log bảo vệ. `set_error_handler` có thể chuyển warnings/notices thành `ErrorException` theo mask, nhưng callback không xử lý error levels bị loại và một số fatal/compile errors có lifecycle riêng.
+PHP error reporting (`error_reporting`, `display_errors`, `log_errors`) cấu hình môi trường. Production không hiển thị error detail cho user; ghi log bảo vệ. `set_error_handler` có thể chuyển warnings/notices thành `ErrorException` theo mask, nhưng `error_reporting()` không tự ngăn custom handler được gọi: callback phải tự kiểm tra mask như ví dụ. `error_levels` của `set_error_handler` chọn loại lỗi chuyển tới handler; một số fatal/compile errors không đi qua handler này.
 
 ## 3. Code ví dụ
 

@@ -40,7 +40,6 @@ Chỉ điền metrics có thể giải thích nguồn đo, time period và contr
 - Giải thích career transitions/gaps ngắn gọn nếu recruiter cần context; tránh narrative phòng thủ.
 - Review spelling, dates, links, PDF accessibility and plain-text parsing; nhờ người khác scan 20 giây xem message chính.
 - Chuẩn bị story/evidence cho mọi metric và technical claim trong CV.
-- Chuẩn bị story/evidence cho mọi metric và technical claim trong CV.
 - Mỗi bullet nên có một chủ thể và một outcome chính; nếu bullet chứa nhiều technologies, tách phần implementation khỏi impact. Dùng date format thống nhất, link portfolio chỉ khi chứa work có thể chia sẻ công khai, và giữ bản plain-text để kiểm tra thứ tự parse của ATS.
 
 ## 5. Lỗi thường gặp / Pitfalls
@@ -90,10 +89,10 @@ Có, điều chỉnh summary/order/keywords dựa role thật, nhưng giữ fact
 
 </details>
 
-## 7. Ứng dụng vào CV
+## 7. Áp dụng thực tế
 
-- Tái cấu trúc **[N]** experience bullets theo scope/action/impact, tăng recruiter response rate từ **[A]% lên [B]%**.
-- Làm nổi bật production ownership/mentoring/architecture outcomes, rút ngắn screening-to-interview conversion **[A]%**.
+- Chọn 3–5 thành tựu dự án có thể kiểm chứng, viết lại theo action–scope–approach–outcome và chuẩn bị nguồn đo cho mỗi con số.
+- Xuất CV dạng text-selectable, kiểm tra thứ tự đọc và điều chỉnh cho role; không đưa hoạt động “viết CV/luyện phỏng vấn” thành thành tựu kỹ thuật trên CV.
 
 ## 8. Tài liệu tham khảo
 

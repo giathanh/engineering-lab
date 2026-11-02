@@ -20,28 +20,33 @@ Database migrations là risk lớn: expand schema backward-compatible, deploy co
 
 ## 3. Code ví dụ
 
-Pipeline skeleton: test và tạo artifact có immutable image tag theo commit SHA.
+Pipeline skeleton: test/build app, rồi build image từ cùng source commit ở job khác. Mỗi job có workspace riêng nên đều cần checkout; needs chỉ tạo dependency, không truyền files. Tag theo SHA giúp traceability nhưng vẫn có thể bị ghi đè; chỉ content digest là immutable.
 
 ```yaml
 name: build
 on: [push, pull_request]
+permissions:
+  contents: read
 jobs:
-	verify:
-		runs-on: ubuntu-latest
-		steps:
-			- uses: actions/checkout@v4
-			- run: npm ci
-			- run: npm test -- --run
-			- run: npm run build
-	image:
-		if: github.event_name == 'push'
-		needs: verify
-		runs-on: ubuntu-latest
-		steps:
-			- run: docker build -t registry.example/app:${GITHUB_SHA} .
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm test -- --run
+      - run: npm run build
+  image:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t registry.example/app:${GITHUB_SHA} .
 ```
 
-Production should pin actions, push to controlled registry, scan/sign artifact and deploy the exact digest—not rebuild with mutable `latest`.
+Ví dụ dừng ở build image cục bộ, chưa push/deploy. Production cần pin actions, push vào registry được kiểm soát, scan/sign và promote cùng image digest qua staging/production. Nếu muốn image chứa đúng dist đã test ở job verify, phải upload/download artifact giữa jobs và dùng Dockerfile đóng gói artifact đó; không tự giả định hai job chia sẻ output.
 
 ## 4. Trade-off & Best practices
 
@@ -52,8 +57,6 @@ Production should pin actions, push to controlled registry, scan/sign artifact a
 - Use progressive delivery with error-rate/latency/business SLOs; pause on insufficient traffic or noisy metrics.
 - Pin dependencies/actions, minimize CI permissions, protect secrets from untrusted forks and isolate deploy credentials.
 - Track change failure rate, deployment frequency, lead time and recovery time; no metric alone is team performance score.
-- Track change failure rate, deployment frequency, lead time and recovery time; no metric alone is team performance score.
-- Pipeline failure cần distinguish code failure, flaky test, dependency outage và credential/config issue; mỗi loại có owner/remediation khác nhau. Sau deployment, smoke checks nên xác nhận critical user journey và data integrity, không chỉ readiness endpoint.
 - Pipeline failure cần distinguish code failure, flaky test, dependency outage và credential/config issue; mỗi loại có owner/remediation khác nhau. Sau deployment, smoke checks nên xác nhận critical user journey và data integrity, không chỉ readiness endpoint.
 - Giữ deploy permissions tách khỏi build job khi có thể; chỉ trusted branch/environment mới được assume production role. Artifact attestations/SBOM hỗ trợ supply-chain review, còn deployment audit trail cần map digest tới source commit và approver.
 
@@ -116,3 +119,4 @@ Không. Flag tách code deploy/release behavior nhưng cần progressive rollout
 - [GitHub Actions documentation](https://docs.github.com/actions)
 - [SLSA Framework](https://slsa.dev/)
 
+- [GitHub Actions: truyền artifacts giữa jobs](https://docs.github.com/en/actions/tutorials/store-and-share-data)

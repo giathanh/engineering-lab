@@ -14,9 +14,9 @@
 
 PHP 8 cải thiện type system và giảm boilerplate, nhưng type declaration không thay thế validation ở trust boundary. Union type (`A|B`), intersection type (`A&B`) và DNF types mô tả tập giá trị/contract. `mixed`, nullable, `never`, `static` return type và variance giúp API rõ hơn; bật `strict_types=1` ảnh hưởng kiểm tra scalar argument theo file gọi, không biến PHP thành ngôn ngữ có type soundness hoàn toàn.
 
-Enums có thể là pure enum hoặc backed enum (`string`/`int`). Backed enum hữu ích cho domain values có serialization ổn định; không nên để enum thay thế entity có state/lifecycle. `match` dùng so sánh `===`, exhaustive theo nhánh có `default`, và ném `UnhandledMatchError` nếu không khớp. Nullsafe operator ngắn gọn cho chain có thể null, nhưng dùng quá sâu dễ che thiếu invariant.
+Enums có thể là pure enum hoặc backed enum (`string`/`int`). Backed enum hữu ích cho domain values có serialization ổn định; không nên để enum thay thế entity có state/lifecycle. `match` dùng so sánh `===` và phải có nhánh khớp tại runtime, nếu không sẽ ném `UnhandledMatchError`. Không bắt buộc có `default`: với enum, liệt kê từng case giúp phát hiện case mới chưa được xử lý; PHP không kiểm tra exhaustiveness lúc compile. Nullsafe operator ngắn gọn cho chain có thể null, nhưng dùng quá sâu dễ che thiếu invariant.
 
-Readonly properties từ PHP 8.1 và readonly classes từ 8.2 giới hạn gán sau initialization; PHP 8.3 thêm `#[\Override]` để kiểm tra method thực sự override parent/interface. Readonly chỉ shallow: object property có thể tham chiếu object mutable, nhưng không thể gán lại property. Typed class constants từ PHP 8.3 giúp ràng buộc loại constant. Attributes là metadata cấu trúc để framework/reflection đọc, thay vì annotation docblock không được runtime kiểm tra.
+Readonly properties từ PHP 8.1 và readonly classes từ 8.2 giới hạn gán sau initialization; PHP 8.3 thêm `#[\Override]` để kiểm tra method thực sự override parent/interface. Từ PHP 8.3, readonly property có thể được khởi tạo lại trong `__clone()` theo quy tắc riêng; vì vậy không nên mô tả là cấm mọi lần gán lại trong mọi lifecycle. Readonly chỉ shallow: object property có thể tham chiếu object mutable, nhưng không thể gán lại property. Typed class constants từ PHP 8.3 giúp ràng buộc loại constant. Attributes là metadata cấu trúc để framework/reflection đọc, thay vì annotation docblock không được runtime kiểm tra.
 
 Named arguments giúp call site dễ đọc nhưng tên parameter trở thành API compatibility concern. Constructor property promotion giảm boilerplate nhưng không nên làm constructor thành nơi chứa toàn bộ logic. Fibers suspend/resume một call stack cooperative; scheduler hoặc async framework phải tự quản lý I/O và scheduling. JIT biên dịch một số code path thành machine code, song lợi ích phụ thuộc workload và không thay thế OPcache.
 
@@ -90,7 +90,7 @@ if (json_validate('{"status":"paid"}')) { // PHP 8.3: validate without decoding.
 <details>
 <summary><b>Q2. Readonly class có deep immutable không?</b></summary>
 
-Không. Property không thể được gán lại sau initialization, nhưng object được tham chiếu vẫn có thể mutable. Readonly bảo vệ binding/property, không tự đóng băng graph.
+Không. Property bị hạn chế gán lại sau initialization (có quy tắc reinitialization trong __clone từ PHP 8.3), nhưng object được tham chiếu vẫn có thể mutable. Readonly bảo vệ binding/property, không tự đóng băng graph.
 
 </details>
 

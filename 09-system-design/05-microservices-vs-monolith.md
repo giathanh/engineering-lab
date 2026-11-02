@@ -23,12 +23,11 @@ Synchronous REST/gRPC phù hợp khi caller cần immediate result, nhưng chain
 Saga checkout có durable state và idempotency keys; đây là workflow outline, không phải một distributed DB transaction.
 
 ```text
-OrderCreated -> ReserveInventory -> AuthorizePayment -> ConfirmOrder
-	|                  |                  |
-	|                  | failure          | failure
-	|                  v                  v
-	+------------ CancelOrder       ReleaseInventory
-						     RefundPayment (if captured)
+CreatePendingOrder -> ReserveInventory -> AuthorizePayment -> ConfirmOrder
+ReserveInventory fails -> CancelOrder
+AuthorizePayment fails -> ReleaseInventory -> CancelOrder
+ConfirmOrder fails after authorization -> VoidAuthorization -> ReleaseInventory -> CancelOrder
+If payment was captured -> RefundPayment instead of voiding an authorization
 ```
 
 Mỗi step ghi outcome/idempotency key, timeout và retry policy. Compensation chạy theo business semantics; inventory release/refund có thể cần manual review hoặc reconciliation nếu provider không phản hồi rõ.
@@ -42,8 +41,6 @@ Mỗi step ghi outcome/idempotency key, timeout và retry policy. Compensation c
 - Async events versioned, idempotent và observability xuyên correlation IDs; có replay/DLQ strategy.
 - Saga state durable, compensation explicit, timeout/reconciliation paths được test.
 - Tách service từng bước qua strangler pattern; chuẩn bị deployment, secrets, dashboards, on-call và rollback trước cutover.
-- Tách service từng bước qua strangler pattern; chuẩn bị deployment, secrets, dashboards, on-call và rollback trước cutover.
-- Trước khi tách, xác định service boundary có transaction/data ownership rõ chưa; nếu mọi request vẫn cần synchronous calls hai chiều và shared tables, việc chuyển process có thể chỉ tăng failure modes. Một module boundary tốt trong monolith là thử nghiệm rẻ cho future extraction.
 - Trước khi tách, xác định service boundary có transaction/data ownership rõ chưa; nếu mọi request vẫn cần synchronous calls hai chiều và shared tables, việc chuyển process có thể chỉ tăng failure modes. Một module boundary tốt trong monolith là thử nghiệm rẻ cho future extraction.
 - Khi request đi qua services, propagate trace/correlation context và xác định ownership của timeout/retry; caller và callee cùng retry có thể nhân tải. Contract-level tests giúp teams deploy independently mà không cần integration environment khổng lồ cho mọi change.
 

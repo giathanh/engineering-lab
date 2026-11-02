@@ -12,9 +12,9 @@
 
 ## 2. Khái niệm cốt lõi
 
-Cache-aside: application đọc cache, miss thì query source, set cache. Đơn giản và chỉ cache data được đọc; concurrent misses tạo stampede. Read-through đặt cache layer thực hiện load. Write-through ghi source/cache đồng bộ, tăng write latency nhưng giảm stale window. Write-behind ghi cache rồi flush async, tăng throughput nhưng có data-loss/reordering risk nếu cache fail.
+Cache-aside: application đọc cache, miss thì query source, set cache. Đơn giản và chỉ cache data được đọc; concurrent misses tạo stampede. Read-through đặt cache layer thực hiện load. Write-through thực hiện write qua cache layer và cập nhật backing store đồng bộ theo contract của hệ thống. Nó tăng write latency, nhưng không tự tạo transaction atomic giữa DB và Redis riêng biệt; phải định nghĩa thứ tự và xử lý partial failure. Write-behind ghi cache rồi flush async, tăng throughput nhưng có data-loss/reordering risk nếu cache fail.
 
-Consistency models: TTL-only chấp nhận stale trong window; explicit invalidation giảm stale nhưng cần cover mọi write paths; versioned keys tránh delete race nhưng tạo cleanup/old-version concerns. Negative caching lưu “not found” ngắn để giảm repeated misses. Cache stampede xử lý bằng single-flight/lock, request coalescing, TTL jitter, stale-while-revalidate. Lock có lease/owner failure modes.
+Consistency models: TTL giới hạn tuổi của cache entry, không tự bảo đảm độ cũ so với source nếu stale data bị refill hoặc TTL được gia hạn; explicit invalidation giảm stale nhưng cần cover mọi write paths; versioned keys tránh delete race nhưng tạo cleanup/old-version concerns. Negative caching lưu “not found” ngắn để giảm repeated misses. Cache stampede xử lý bằng single-flight/lock, request coalescing, TTL jitter, stale-while-revalidate. Lock có lease/owner failure modes.
 
 Cache key phải gồm mọi dimension ảnh hưởng response (tenant, locale, permission, filter). Cache value cần version/schema policy. CDN cache dựa URL, headers, cache-control, vary, cookies/query config; `private`/`no-store` cho data nhạy cảm theo semantics. Multi-layer cache khiến invalidation order và observability phức tạp.
 
@@ -45,8 +45,6 @@ Production cần validate cached schema, namespace tenant khi dữ liệu scope-
 - Dùng CDN cho public static/cacheable responses; kiểm tra `Cache-Control`, `Vary`, cookies/auth headers và purge policy.
 - Cache key include tenant/locale/permissions; không assume URL đủ phân biệt personalized output.
 - Theo dõi hit/miss, origin latency, stale age, evictions, hot keys và cache error rate.
-- Theo dõi hit/miss, origin latency, stale age, evictions, hot keys và cache error rate.
-- Không cache kết quả chỉ vì query chậm: kiểm tra index/plan và giảm dữ liệu trước để tránh thêm invalidation surface. Với dữ liệu cần freshness nghiêm ngặt, dùng cache có version/ETag hoặc bypass; xác định behavior khi cache backend unavailable thay vì để từng caller tự quyết.
 - Không cache kết quả chỉ vì query chậm: kiểm tra index/plan và giảm dữ liệu trước để tránh thêm invalidation surface. Với dữ liệu cần freshness nghiêm ngặt, dùng cache có version/ETag hoặc bypass; xác định behavior khi cache backend unavailable thay vì để từng caller tự quyết.
 - Khi cache phục vụ nhiều layers, ghi lại owner và invalidation path cho từng key family. Thêm test cho stale/expired entries và deploy schema changes để phát hiện trường hợp rolling versions cùng đọc một cache namespace.
 

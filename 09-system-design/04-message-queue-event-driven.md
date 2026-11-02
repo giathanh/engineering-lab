@@ -12,7 +12,7 @@
 
 ## 2. Khái niệm cốt lõi
 
-Message broker decouples producer from consumer, buffers load và cho phép independent scaling. Queue work thường một consumer group xử lý message; pub/sub fan-out gửi tới nhiều subscribers. Ack/delete semantics quyết định khi message được coi hoàn tất. Visibility timeout (SQS) ẩn message trong processing window; nếu timeout trước ack, message có thể redeliver.
+Message broker decouples producer from consumer, buffers load và cho phép independent scaling. Queue work thường một consumer group xử lý message; pub/sub fan-out gửi tới nhiều subscribers. FIFO enqueue/delivery không tự bảo đảm thứ tự hoàn tất khi có nhiều consumer, retries hoặc redelivery; cần serialize theo entity nếu business yêu cầu. Ack/delete semantics quyết định khi message được coi hoàn tất. Visibility timeout (SQS) ẩn message trong processing window; nếu timeout trước ack, message có thể redeliver.
 
 RabbitMQ exchanges/routes messages tới queues, hỗ trợ ack, routing keys, dead-letter, prefetch và queue types. Kafka lưu append-only partitioned log; consumer offsets cho phép replay, partition key quyết định ordering/locality và một consumer trong group xử lý partition tại thời điểm. SQS managed queue giảm broker ops; Standard queue at-least-once/best-effort ordering, FIFO có ordering/dedup constraints. Chọn theo durability, throughput, replay, routing, operational burden và cloud coupling.
 
@@ -25,7 +25,9 @@ Outbox schema ghi cùng transaction với business mutation; relay worker publis
 ```sql
 BEGIN;
 
-UPDATE orders SET status = 'paid' WHERE id = :order_id;
+UPDATE orders SET status = 'paid' WHERE id = :order_id AND status = 'pending';
+-- Application must verify exactly one affected row; otherwise roll back/handle replay.
+-- Validate payment outcome and use a unique event_id before inserting the event.
 
 INSERT INTO outbox_events (event_id, aggregate_id, event_type, payload, created_at)
 VALUES (:event_id, :order_id, 'OrderPaid', :payload, CURRENT_TIMESTAMP);
@@ -42,7 +44,6 @@ Relay có thể publish lặp nếu crash sau publish trước mark-sent; consum
 - Consumer ack sau side effect durable; idempotency/transaction boundaries ngăn duplicate effects.
 - Dùng bounded concurrency/prefetch, backpressure và visibility/processing timeout phù hợp job duration.
 - Retry transient errors với delay/backoff; permanent/poison messages vào DLQ có alert/replay runbook.
-- Theo dõi age of oldest message/consumer lag, not only queue depth; scale consumer không vượt downstream capacity.
 - Theo dõi age of oldest message/consumer lag, not only queue depth; scale consumer không vượt downstream capacity.
 - Message retention/replay có thể phát lại event cũ sau deploy hoặc schema change; consumer phải tương thích với historical payloads. Versioning, schema validation và canary consumer giúp kiểm tra tương thích trước khi tăng throughput.
 - Outbox/inbox pattern cho DB-to-broker consistency; schema registry/compatibility checks khi nhiều teams consume.

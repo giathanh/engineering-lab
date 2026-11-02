@@ -12,7 +12,7 @@
 
 ## 3. Code ví dụ
 
-<!-- Ví dụ ngắn, thực tế, có comment. Ưu tiên ví dụ "sai vs đúng" -->
+<!-- Ghi runtime/version và dependencies/context. Ví dụ phải đúng syntax/behavior; đánh dấu pseudocode nếu chưa độc lập. Nêu cách chạy/kiểm chứng và giới hạn. -->
 
 ## 4. Trade-off & Best practices
 
@@ -35,7 +35,7 @@
 
 ## 7. Ứng dụng vào CV
 
-<!-- 1–2 bullet mẫu (impact-based, có số liệu) thể hiện kinh nghiệm với chủ đề này -->
+<!-- 1–2 khung bullet impact-based dùng [A]/[N]; chỉ điền evidence thật. Module Interview/CV có thể đổi thành "Áp dụng thực tế", không đưa luyện phỏng vấn thành kinh nghiệm production. -->
 
 ## 8. Tài liệu tham khảo
 

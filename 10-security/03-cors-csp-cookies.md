@@ -29,9 +29,13 @@ const allowedOrigins = new Set(['https://app.example.com']);
 
 function applyCors(request, response) {
 	const origin = request.headers.origin;
+	const vary = response.getHeader('Vary');
+	const fields = (Array.isArray(vary) ? vary.join(',') : String(vary ?? ''))
+		.split(',').map((field) => field.trim()).filter(Boolean);
+	if (!fields.some((field) => field === '*' || field.toLowerCase() === 'origin')) fields.push('Origin');
+	response.setHeader('Vary', fields.join(', '));
 	if (origin && allowedOrigins.has(origin)) {
 		response.setHeader('Access-Control-Allow-Origin', origin);
-		response.setHeader('Vary', 'Origin');
 		response.setHeader('Access-Control-Allow-Credentials', 'true');
 	}
 }
@@ -50,9 +54,7 @@ Production cần xử lý OPTIONS, allowlisted methods/headers, origin absence v
 - CSRF token hoặc Origin/Referer checks cho cookie-based mutations; GET phải safe/idempotent về semantics.
 - Không đặt access token/session identifiers trong URL, logs hoặc CSP reports.
 - Test browser preflight, credentials, subdomains, proxies và production HTTPS behavior.
-- Test browser preflight, credentials, subdomains, proxies và production HTTPS behavior.
-- CORS/CSP reports có thể chứa URL hoặc metadata nhạy cảm, đồng thời bị attacker spam. Hạn chế payload/retention, rate-limit report endpoint và phân biệt violation thật với extension/browser noise trước khi paging.
-- CORS/CSP reports có thể chứa URL hoặc metadata nhạy cảm, đồng thời bị attacker spam. Hạn chế payload/retention, rate-limit report endpoint và phân biệt violation thật với extension/browser noise trước khi paging.
+- CSP violation reports có thể chứa URL hoặc metadata nhạy cảm, đồng thời bị attacker spam. Hạn chế payload/retention, rate-limit report endpoint và phân biệt violation thật với extension/browser noise trước khi paging.
 - `SameSite` phân biệt site, không luôn đồng nghĩa origin; sibling subdomains có thể cùng site nhưng khác origin. Rà cookie domain và trusted subdomain ownership khi thiết kế CSRF/CORS, đặc biệt nếu user-controlled content được host ở subdomain.
 
 ## 5. Lỗi thường gặp / Pitfalls
@@ -84,7 +86,7 @@ Browser gửi OPTIONS trước một số cross-origin requests không thuộc s
 <details>
 <summary><b>Q3. Vì sao credentialed CORS không dùng wildcard?</b></summary>
 
-Browser yêu cầu origin cụ thể khi credentials enabled; wildcard có thể expose credentialed response nếu được reflect/serve sai.
+Browser yêu cầu origin cụ thể khi credentials enabled; browser chặn script đọc response khi ACAO là wildcard và credentials mode là include. Nguy cơ lộ dữ liệu xuất hiện khi server reflect Origin tùy ý kèm Allow-Credentials, không phải browser chấp nhận wildcard đó.
 
 </details>
 
@@ -98,7 +100,7 @@ Không trong mọi trường hợp. SameSite giảm cross-site cookie sending nh
 <details>
 <summary><b>Q5. CSP nonce phải thế nào?</b></summary>
 
-Cryptographically random, unique per response và gắn đúng script/style; không reuse/có thể đoán. Nonce không an toàn nếu attacker kiểm soát markup và policy nguồn quá rộng.
+Cryptographically random, unique per response và gắn đúng script/style; không reuse/có thể đoán. Nonce chỉ đáng tin nếu không bị lộ/sao chép vào nội dung attacker và được kiểm tra bởi policy phù hợp; nó không thay output encoding/sanitization.
 
 </details>
 

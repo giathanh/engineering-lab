@@ -37,11 +37,13 @@ UPDATE accounts
 SET balance = balance - :amount
 WHERE id = :from_id AND balance >= :amount;
 
--- Application verifies exactly one source row was updated before crediting.
+-- Application rolls back unless both accounts exist, IDs differ, amount > 0,
+-- ownership/currency match, and exactly one source row was updated.
 UPDATE accounts
 SET balance = balance + :amount
 WHERE id = :to_id;
 
+-- Application also verifies exactly one destination row was updated; otherwise ROLLBACK.
 COMMIT;
 ```
 

@@ -44,7 +44,7 @@ $invoice = Invoice::make();
 var_dump($invoice instanceof Invoice); // bool(true)
 ```
 
-Nếu thay `new static()` bằng `new self()`, factory tạo instance của class khai báo `Record`, không phải subclass. Với domain behavior phức tạp, ưu tiên injected factory/service thay vì static factory phụ thuộc inheritance.
+Nếu thay `new static()` bằng `new self()`, PHP cố khởi tạo class khai báo `Record` và ném `Error` vì đây là abstract class; nó không tạo `Invoice`. Với base class concrete, `new self()` tạo base instance và còn có thể vi phạm return type `static` khi gọi từ subclass. Với domain behavior phức tạp, ưu tiên injected factory/service thay vì static factory phụ thuộc inheritance.
 
 ## 4. Trade-off & Best practices
 

@@ -54,7 +54,7 @@ final class RebuildInvoice implements ShouldQueue
 }
 ```
 
-Dispatch từ transaction với after-commit semantics khi worker phụ thuộc dữ liệu vừa ghi. Tên API/config có thể phụ thuộc cách queue connection được cấu hình; cần test integration với driver production.
+Dispatch từ transaction bằng `RebuildInvoice::dispatch($invoiceId)->afterCommit()` khi worker phụ thuộc dữ liệu vừa ghi. `afterCommit` không bảo đảm publish bền vững: process vẫn có thể chết sau commit trước khi enqueue; dùng transactional outbox nếu cần khép khoảng trống này. Tên API/config có thể phụ thuộc cách queue connection được cấu hình; cần test integration với driver production.
 
 ## 4. Trade-off & Best practices
 

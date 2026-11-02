@@ -39,8 +39,6 @@ Next update: Timestamp and channel
 - Postmortem within a useful timeframe, invite cross-functional contributors and distinguish facts/interpretations.
 - Actions reduce likelihood, detection time or blast radius; add owner, due date, priority and verification signal.
 - Debt prioritization compare repayment cost with incident probability/impact, feature delay and operational toil.
-- Debt prioritization compare repayment cost with incident probability/impact, feature delay and operational toil.
-- Technical debt review nên gắn với planning cadence: service owner cập nhật risk evidence, product/engineering thống nhất capacity và team đo interest đã giảm chưa. Debt không có owner hoặc không còn impact nên được reassess/retire thay vì giữ mãi trong backlog.
 - Technical debt review nên gắn với planning cadence: service owner cập nhật risk evidence, product/engineering thống nhất capacity và team đo interest đã giảm chưa. Debt không có owner hoặc không còn impact nên được reassess/retire thay vì giữ mãi trong backlog.
 - Incident commander điều phối shared understanding, không nhất thiết là người debug sâu nhất; operations lead thực hiện mitigation, communications lead cập nhật stakeholders. Tách roles ngăn một engineer vừa thay đổi production vừa phải trả lời nhiều kênh và mất situational awareness.
 - Track action/debt closure and repeat incidents; avoid “all tech debt” bucket without outcome/owner.

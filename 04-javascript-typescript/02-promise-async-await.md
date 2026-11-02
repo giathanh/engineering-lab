@@ -14,7 +14,7 @@
 
 Promise có trạng thái pending, fulfilled hoặc rejected, chỉ settle một lần. Promise resolution procedure adopt Promise/thenable được return. `.then(onFulfilled, onRejected)` tạo Promise mới: return value fulfill chain, throw/rejection reject chain. `.finally()` chạy cleanup nhưng nếu callback ném/return rejected Promise thì có thể thay đổi outcome.
 
-`async function` luôn trả Promise; exception trong body trở thành rejection. `await` tạm dừng continuation tới khi Promise settle, rồi continuation vào microtask; JavaScript thread vẫn xử lý việc khác. Công việc đồng bộ dài trước/sau await vẫn block event loop. Await tuần tự tạo latency nối tiếp nếu tasks độc lập; `Promise.all` khởi động trước rồi chờ đồng thời.
+`async function` luôn trả Promise; exception trong body trở thành rejection. `await` tạm dừng continuation tới khi Promise settle, rồi continuation vào microtask; JavaScript thread vẫn xử lý việc khác. Công việc đồng bộ dài trước/sau await vẫn block event loop. Await tuần tự tạo latency nối tiếp nếu tasks độc lập; gọi các async function trước rồi dùng `Promise.all` để gom kết quả. Các combinator không tự khởi chạy task: lời gọi trong `map` hoặc lúc tạo Promise mới là nơi khởi chạy.
 
 Combinators có semantics khác nhau: `all` resolve khi mọi fulfillment, reject khi một input reject nhưng các promise khác vẫn chạy; `allSettled` trả status/value hoặc reason theo input order; `race` settle theo promise đầu tiên hoàn tất dù fulfilled hay rejected; `any` fulfill theo promise đầu tiên fulfill và chỉ reject `AggregateError` nếu tất cả đều reject. Không combinator nào tự giới hạn concurrency/cancel task.
 
@@ -26,7 +26,7 @@ Ví dụ gom kết quả thất bại mà không bỏ các request thành công.
 
 ```js
 async function loadProfiles(ids, fetchProfile) {
-	const outcomes = await Promise.allSettled(ids.map((id) => fetchProfile(id)));
+	const outcomes = await Promise.allSettled(ids.map((id) => Promise.resolve().then(() => fetchProfile(id))));
 	return outcomes.map((outcome, index) => ({
 		id: ids[index],
 		profile: outcome.status === 'fulfilled' ? outcome.value : null,

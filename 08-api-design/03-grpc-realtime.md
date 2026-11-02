@@ -16,7 +16,7 @@ gRPC service/method được định nghĩa bằng `.proto`; protoc/plugin sinh 
 
 HTTP/2 multiplexing cho nhiều RPC trên connection, nhưng browser-native gRPC thường cần gRPC-Web/proxy vì framing/trailers restrictions. Load balancer cần hỗ trợ long-lived HTTP/2 streams, health checks và graceful connection draining. Streaming tạo backpressure/flow-control concerns; consumer chậm phải không khiến memory vô hạn tăng.
 
-WebSocket handshake chuyển HTTP thành persistent bidirectional frames; client/server đều chủ động gửi. SSE dùng `text/event-stream`, browser tự reconnect, hỗ trợ event IDs/replay nếu server lưu cursor. Long polling giữ request đến khi có update rồi client gọi lại. Polling dễ cache/deploy và thường đủ cho updates ít frequent; realtime channels tăng connection/fan-out/operations complexity.
+WebSocket qua HTTP/1.1 dùng Upgrade handshake; HTTP/2/3 có extended CONNECT khi được hỗ trợ. Sau handshake, giao tiếp dùng persistent bidirectional frames; client/server đều chủ động gửi. SSE dùng `text/event-stream`, browser tự reconnect, hỗ trợ event IDs/replay nếu server lưu cursor. Long polling giữ request đến khi có update rồi client gọi lại. Polling dễ cache/deploy và thường đủ cho updates ít frequent; realtime channels tăng connection/fan-out/operations complexity.
 
 ## 3. Code ví dụ
 
@@ -47,8 +47,6 @@ message InventoryUpdate { string product_id = 1; int32 available = 2; }
 - Thiết kế reconnect exponential backoff+jitter, event cursor/dedup, heartbeat, auth refresh và tenant authorization.
 - Drain persistent connections trong deploy, xử lý reconnect storm và load distribution.
 - Instrument active connections, message rates, lag, disconnect reasons, stream duration và backpressure.
-- Instrument active connections, message rates, lag, disconnect reasons, stream duration và backpressure.
-- Tách connection lifetime khỏi user session lifetime: token expiry/revocation có thể xảy ra khi socket vẫn mở. Khi deploy, gửi close/reconnect hint có backoff và resume cursor để clients không tạo connection storm hoặc mất update.
 - Tách connection lifetime khỏi user session lifetime: token expiry/revocation có thể xảy ra khi socket vẫn mở. Khi deploy, gửi close/reconnect hint có backoff và resume cursor để clients không tạo connection storm hoặc mất update.
 - Với browser clients, kiểm tra gRPC-Web proxy compatibility, CORS/preflight và trailer-to-header mapping; không giả định native gRPC streaming hoạt động trực tiếp qua mọi browser/CDN. Một protocol fallback có thể cần thiết cho public APIs.
 

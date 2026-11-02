@@ -44,6 +44,8 @@ export function createOrderService({ paymentGateway, orderRepository }) {
 // Production injects real adapters; a unit test can inject deterministic fakes.
 ```
 
+Ví dụ chỉ minh họa DI, chưa phải checkout production: charge thành công rồi save thất bại có thể để lại payment không có order. Flow thật cần lưu trạng thái pending, payment idempotency key và cơ chế reconciliation/compensation; transaction DB không rollback được payment bên ngoài.
+
 Service sở hữu policy “đơn phải có items” và orchestration; gateway/repository là chi tiết bên ngoài. Không cần tạo interface/class riêng nếu JavaScript function/object contract đã đủ; abstraction nên phản ánh boundary thực, không phải nghi thức.
 
 ## 4. Trade-off & Best practices

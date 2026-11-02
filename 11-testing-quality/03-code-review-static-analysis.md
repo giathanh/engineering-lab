@@ -20,22 +20,24 @@ CI pipeline nên chạy format/lint/typecheck/unit trước rồi integration/e2
 
 ## 3. Code ví dụ
 
-GitHub Actions quality gate cho PHP và TypeScript; command names phụ thuộc package/composer scripts của repository.
+GitHub Actions quality gate cho JavaScript/TypeScript; command names phụ thuộc package/composer scripts của repository.
 
 ```yaml
 name: quality
 on: [pull_request]
+permissions:
+  contents: read
 jobs:
-	checks:
-		runs-on: ubuntu-latest
-		steps:
-			- uses: actions/checkout@v4
-			- uses: actions/setup-node@v4
-				with: { node-version: 22, cache: npm }
-			- run: npm ci
-			- run: npm run lint
-			- run: npm run typecheck
-			- run: npm test -- --run
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test -- --run
 ```
 
 Pin third-party actions to reviewed immutable SHAs where organization policy requires it; use separate PHP matrix/job and least-privilege workflow permissions.
@@ -49,8 +51,6 @@ Pin third-party actions to reviewed immutable SHAs where organization policy req
 - Comments cụ thể, giải thích risk/reason; phân loại blocking, suggestion, question để tránh ambiguity.
 - CI use immutable lockfiles, minimal permissions, secret isolation for fork PRs and protected deployment environments.
 - Track change failure rate, review cycle time, flakiness and defect escape—không dùng LOC/review comments làm quota.
-- Track change failure rate, review cycle time, flakiness and defect escape—không dùng LOC/review comments làm quota.
-- Với monorepo, chạy checks theo affected packages nhưng giữ periodic full validation để phát hiện dependency graph gaps. Lock tool versions, cache key theo lockfile và report baseline changes để CI không âm thầm trượt quality threshold.
 - Với monorepo, chạy checks theo affected packages nhưng giữ periodic full validation để phát hiện dependency graph gaps. Lock tool versions, cache key theo lockfile và report baseline changes để CI không âm thầm trượt quality threshold.
 - Mọi suppression nên gắn lý do, owner và expiry/remediation link; nếu tool tạo nhiều false positives, sửa rule/config hoặc upstream typing thay vì thêm ignore pattern rộng. Review findings theo risk giúp static analysis trở thành feedback channel thay vì gate hình thức.
 

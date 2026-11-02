@@ -5,14 +5,14 @@
 ## 1. Tóm tắt nhanh (TL;DR)
 
 - Passwords cần one-way slow password hashing (Argon2id/bcrypt/scrypt), không encryption hoặc fast hash như SHA-256 thuần.
-- Encryption có key để decrypt; hashing không thể đảo ngược và dùng verification/constant-time library APIs.
+- Encryption có key để decrypt; hashing không có thao tác decrypt, nhưng password yếu vẫn có thể bị dò bằng offline guessing và dùng verification/constant-time library APIs.
 - AEAD modes (AES-GCM/ChaCha20-Poly1305) bảo vệ confidentiality + integrity; nonce/IV uniqueness và key management rất quan trọng.
 - Secrets phải tách khỏi source code/logs, least-privilege, rotate, audit access và hạn chế lifetime/scope.
 - Password hash parameters cần benchmark theo server budget và nâng cấp/rehash dần khi verify.
 
 ## 2. Khái niệm cốt lõi
 
-Password hashing nhận password cùng salt random per credential, dùng memory/CPU-hard KDF để làm offline guessing đắt. Argon2id thường được khuyến nghị khi hỗ trợ; bcrypt/scrypt phù hợp theo ecosystem/compatibility. Salt không bí mật; pepper là server-side secret bổ sung nhưng cần key rotation/recovery policy. Store algorithm/parameters cùng hash để verify/migrate. Fast hash được thiết kế tối ưu throughput, nên không phù hợp passwords.
+Password hashing nhận password cùng salt random per credential, dùng memory/CPU-hard KDF để làm offline guessing đắt. Ưu tiên Argon2id khi hỗ trợ; scrypt là lựa chọn thay thế khi không có Argon2id. bcrypt chủ yếu phù hợp legacy/compatibility và thường chỉ xử lý tối đa 72 byte password; phải kiểm soát giới hạn theo thư viện, không âm thầm truncate. Salt không bí mật; pepper là server-side secret bổ sung nhưng cần key rotation/recovery policy. Store algorithm/parameters cùng hash để verify/migrate. Fast hash được thiết kế tối ưu throughput, nên không phù hợp passwords.
 
 Encryption chuyển plaintext thành ciphertext bằng key; symmetric encryption nhanh và cần key distribution/protection. Asymmetric crypto hỗ trợ key agreement/signatures but not password storage. AEAD (authenticated encryption with associated data) xác thực ciphertext và metadata; không dùng unauthenticated encryption tùy tiện. Nonce/IV phải unique theo requirements của algorithm/key; reuse AES-GCM nonce có thể phá confidentiality/integrity.
 
@@ -20,17 +20,16 @@ Secrets lifecycle: generate bằng CSPRNG, store trong secret manager/KMS, injec
 
 ## 3. Code ví dụ
 
-PHP password hashing/verification dùng built-in API, lưu hash string đầy đủ trong DB.
+PHP password hashing/verification dùng built-in API, lưu hash string đầy đủ trong DB. Hai phase dưới đây là đăng ký và đăng nhập; khi đăng nhập thật phải đọc hash đã lưu của user, không hash lại để so sánh chuỗi.
 
 ```php
 <?php
 declare(strict_types=1);
 
 $hash = password_hash($password, PASSWORD_ARGON2ID);
-if ($hash === false) {
-	throw new RuntimeException('Password hashing failed');
-}
+// PHP 8 throws ValueError/Error on hashing failure; Argon2 support depends on the build.
 
+// Login: $hash is loaded from the credential store.
 if (!password_verify($submittedPassword, $hash)) {
 	throw new RuntimeException('Invalid credentials');
 }
@@ -50,8 +49,6 @@ if (password_needs_rehash($hash, PASSWORD_ARGON2ID)) {
 - Lưu secrets trong manager/KMS, scope per service/environment, short-lived credentials/managed identity nếu có.
 - Rotate keys/secrets có overlap procedure, audit, incident revocation và dependent service rollout.
 - Scan git history/artifacts/images for accidental secrets; revoke immediately if exposed, xóa commit không đủ.
-- Scan git history/artifacts/images for accidental secrets; revoke immediately if exposed, xóa commit không đủ.
-- Incident response cho key exposure cần xác định thời gian/phạm vi, revoke credential, rotate dependent systems, kiểm tra audit logs và thông báo theo policy. Rewriting repository history giảm discoverability nhưng không thu hồi copies/forks/build artifacts.
 - Incident response cho key exposure cần xác định thời gian/phạm vi, revoke credential, rotate dependent systems, kiểm tra audit logs và thông báo theo policy. Rewriting repository history giảm discoverability nhưng không thu hồi copies/forks/build artifacts.
 - Với encrypted data, lưu key version/metadata cạnh ciphertext và test decryption trong restore drills. Rotation thường dùng envelope encryption: KMS bảo vệ data keys, cho phép rewrap keys mà không phải tải toàn bộ dataset vào một maintenance window.
 

@@ -16,7 +16,7 @@ Estimate cố dự đoán effort/duration/uncertainty; commitment là quyết đ
 
 Planning poker/story points relative size team-specific; velocity chỉ hỗ trợ forecasting cùng team/conditions, không đo individual productivity. Cycle time/throughput có thể forecast probabilistically khi work items nhỏ và history ổn định. Include testing, review, rollout, migration, observability and operational tasks.
 
-PO quyết định product priority/value; BA giúp phân tích business rules/processes; engineers làm rõ feasibility/risks. Definition of Ready/Done hữu ích nếu nhẹ và phục vụ flow; tránh bureaucracy. Scrum events tạo cadence inspection/adaptation; Kanban visualizes WIP/flow. WIP limits giảm context switching và expose bottlenecks.
+PO quyết định product priority/value; BA giúp phân tích business rules/processes; engineers làm rõ feasibility/risks. Trong Scrum Guide 2020, Definition of Done là commitment của Increment; Definition of Ready, story points, planning poker và velocity không phải yêu cầu bắt buộc của Scrum. Scrum có ba accountabilities: Developers, Product Owner và Scrum Master; BA là chức danh có thể tồn tại trong tổ chức, không phải accountability riêng của Scrum. Sprint Goal là commitment của Sprint Backlog; scope có thể được thương lượng lại khi học thêm mà không làm mất Sprint Goal. Scrum events tạo cadence inspection/adaptation; Kanban visualizes WIP/flow. WIP limits giảm context switching và expose bottlenecks.
 
 ## 3. Code ví dụ
 
@@ -42,13 +42,13 @@ Next step: validate volume/retention with product and security before commitment
 - Pair with PO/BA on examples, edge cases, acceptance criteria and out-of-scope decisions.
 - Limit WIP and track cycle time/blockers; delivery predictability comes from flow and small batches.
 - Reserve capacity for incidents/maintenance only with explicit historical data and prioritization.
+- Forecasts nên được cập nhật theo actual throughput/blocked time, không “correct” estimates retrospectively để trông chính xác hơn. So sánh actual với assumptions giúp team cải thiện planning mà không biến forecast miss thành đánh giá cá nhân.
+- Khi dependencies ngoài team chưa rõ, tách discovery/decision deadline khỏi implementation forecast và ghi owner cần phản hồi. Nếu scope có thể giảm, thống nhất minimum releasable slice với PO trước; không âm thầm bỏ testing, security hoặc rollout tasks để giữ một date giả.
+- Retrospectives nên chọn một systemic improvement có owner/experiment trong iteration kế tiếp thay tạo danh sách dài. Forecast review nhìn vào work mix, interruption và blocked time; velocity tăng/giảm tự nó không chứng minh team productivity hay chất lượng tốt hơn.
 
 ## 5. Lỗi thường gặp / Pitfalls
 
-- Forecasts nên được cập nhật theo actual throughput/blocked time, không “correct” estimates retrospectively để trông chính xác hơn. So sánh actual với assumptions giúp team cải thiện planning mà không biến forecast miss thành đánh giá cá nhân.
 
-- Khi dependencies ngoài team chưa rõ, tách discovery/decision deadline khỏi implementation forecast và ghi owner cần phản hồi. Nếu scope có thể giảm, thống nhất minimum releasable slice với PO trước; không âm thầm bỏ testing, security hoặc rollout tasks để giữ một date giả.
-- Retrospectives nên chọn một systemic improvement có owner/experiment trong iteration kế tiếp thay tạo danh sách dài. Forecast review nhìn vào work mix, interruption và blocked time; velocity tăng/giảm tự nó không chứng minh team productivity hay chất lượng tốt hơn.
 
 - Give exact date before discovery and treat it as contract regardless of scope change.
 - Estimate only coding time, omit review, QA, migration, rollout and support.
@@ -84,7 +84,7 @@ Clarify scope, split vertical slices, identify unknowns and run a timeboxed spik
 <details>
 <summary><b>Q4. Báo delay với PO ra sao?</b></summary>
 
-Communicate early with evidence, cause/uncertainty, user impact and options (scope/date/quality trade-offs), then update forecast.
+Communicate early with evidence, cause/uncertainty, user impact and options (scope/date/capacity trade-offs), giữ Definition of Done và yêu cầu an toàn đã thống nhất, then update forecast.
 
 </details>
 
@@ -106,4 +106,3 @@ Không. Agile plans iteratively and adapts to evidence; it still needs goals, pr
 - [Kanban Guide](https://kanbanguides.org/english/)
 - [Agile Manifesto](https://agilemanifesto.org/)
 - [Martin Fowler: Story Points](https://martinfowler.com/bliki/StoryPoint.html)
-

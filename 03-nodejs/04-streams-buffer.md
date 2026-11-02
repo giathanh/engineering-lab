@@ -16,7 +16,7 @@ Một Readable phát dữ liệu; Writable nhận dữ liệu; Duplex vừa đ�
 
 `Buffer` là abstraction cho byte, thường dùng để biểu diễn dữ liệu nhị phân. Khi nhận UTF-8 theo nhiều chunk, một ký tự có thể bị tách giữa hai chunk. Chuyển từng chunk bằng `chunk.toString('utf8')` có thể tạo ký tự thay thế ở ranh giới. Dùng `StringDecoder` hoặc `setEncoding('utf8')` để giữ trạng thái decode giữa các chunk.
 
-Trong Writable, `write(chunk)` trả về `false` nghĩa là buffer nội bộ đã vượt `highWaterMark` và producer nên dừng ghi đến khi có `drain`. Nếu bỏ qua tín hiệu này, producer nhanh có thể tiếp tục cấp dữ liệu, làm bộ nhớ tăng theo kích thước đầu vào. Khi stream downstream chậm, backpressure nên được truyền ngược qua pipeline để làm chậm nguồn.
+Trong Writable, `write(chunk)` trả về `false` nghĩa là buffer nội bộ đã đạt hoặc vượt `highWaterMark` và producer nên dừng ghi đến khi có `drain`. Nếu bỏ qua tín hiệu này, producer nhanh có thể tiếp tục cấp dữ liệu, làm bộ nhớ tăng theo kích thước đầu vào. Khi stream downstream chậm, backpressure nên được truyền ngược qua pipeline để làm chậm nguồn.
 
 ```mermaid
 flowchart LR
@@ -30,7 +30,7 @@ Trong Node, `pipe()` chuyển dữ liệu và có xử lý một phần backpres
 
 ## 3. Code ví dụ
 
-Ví dụ copy file theo stream, có backpressure, xử lý lỗi và giải phóng stream tự động. Dùng `node copy.mjs input.bin output.bin`.
+Ví dụ copy file theo stream, có backpressure, xử lý lỗi và giải phóng stream tự động. Dùng `node copy.mjs input.bin output.bin`; output phải chưa tồn tại (`wx`) để tránh ghi đè/truncate nhầm input.
 
 ```js
 import { createReadStream, createWriteStream } from 'node:fs';
@@ -43,7 +43,7 @@ if (!source || !destination) {
 }
 
 try {
-	await pipeline(createReadStream(source), createWriteStream(destination));
+	await pipeline(createReadStream(source), createWriteStream(destination, { flags: 'wx' }));
 	console.log('Copy complete');
 } catch (error) {
 	console.error('Copy failed:', error.message);
@@ -97,7 +97,7 @@ Không. Đây là ngưỡng để stream báo cần giảm tốc độ; memory c
 <details>
 <summary><b>Q4. Buffer khác string thế nào?</b></summary>
 
-Buffer chứa byte; string chứa ký tự theo encoding. Ranh giới byte không nhất thiết là ranh giới ký tự, nhất là UTF-8 multibyte.
+Buffer chứa byte; JavaScript string là chuỗi UTF-16 code units, cần encoding khi chuyển giữa string và byte. Ranh giới byte không nhất thiết là ranh giới ký tự, nhất là UTF-8 multibyte.
 
 </details>
 

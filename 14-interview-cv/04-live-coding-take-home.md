@@ -41,13 +41,12 @@ Approach template trước khi implementation.
 - Take-home deliverable: simple setup, runnable tests, sample env, no secrets, deterministic seed and concise design notes.
 - Clarify allowed AI/docs/libraries, timebox, submission format and evaluation criteria; follow rules transparently.
 - Trước khi nộp, chạy lại từ clean checkout theo README, xác nhận tests/build và kiểm tra diff không chứa credentials, debug output hoặc generated files ngoài yêu cầu. Ghi known limitations theo mức ảnh hưởng, không liệt kê mọi hypothetical future feature.
-
-## 5. Lỗi thường gặp / Pitfalls
-
 - Nếu interviewer gợi ý hướng khác, xác nhận requirement mới và giải thích bạn sẽ giữ hay đổi approach. Khả năng tiếp nhận feedback/điều chỉnh reasoning là một phần collaboration, không phải cuộc thi chứng minh solution ban đầu đúng.
 - Để lại vài phút đọc lại code từ góc nhìn reviewer: tên biến, error path, boundary conditions và complexity. Một implementation ngắn dễ giải thích thường có giá trị hơn thêm abstraction chưa cần.
 
-- Trước khi nộp, chạy lại từ clean checkout theo README, xác nhận tests/build và kiểm tra diff không chứa credentials, debug output hoặc generated files ngoài yêu cầu. Ghi known limitations theo mức ảnh hưởng, không liệt kê mọi hypothetical future feature.
+## 5. Lỗi thường gặp / Pitfalls
+
+
 
 - Code ngay trước khi clarify duplicates/null/error semantics.
 - Im lặng lâu, không chia sẻ approach hoặc kiểm tra assumptions.
@@ -94,10 +93,10 @@ Theo timebox/rubric đã clarify. Nộp vertical slice chất lượng và docum
 
 </details>
 
-## 7. Ứng dụng vào CV
+## 7. Áp dụng thực tế
 
-- Hoàn thiện **[N]** take-home/live coding exercises có tests/README, giảm setup/debug time **[A]%** trong mock review.
-- Chuẩn hóa interview checklist và communication practice, tăng completion rate mock challenge từ **[A]% lên [B]%**.
+- Làm một bài có timebox, chạy từ clean checkout và ghi rõ phần hoàn thành, cách kiểm tra, known limitations cùng công cụ được phép sử dụng.
+- Nếu đưa vào portfolio, ghi đây là bài tập/demo; không mô tả như hệ thống phục vụ khách hàng thật hoặc gắn số liệu production không có bằng chứng.
 
 ## 8. Tài liệu tham khảo
 

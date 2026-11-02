@@ -53,7 +53,6 @@ DB update nên dùng optimistic version/conditional update hoặc transaction đ
 - Định nghĩa SLO per workflow; redirect/chat latency khác notification delivery freshness/checkout correctness.
 - Thiết kế privacy/retention, authorization, tenant isolation, rate limits và observability per entity/correlation ID.
 - Bắt đầu với simplest viable topology; add partitioning/multi-region/fan-out architecture khi estimates/metrics justify.
-- Bắt đầu với simplest viable topology; add partitioning/multi-region/fan-out architecture khi estimates/metrics justify.
 - Nêu explicitly các unknowns cần prototype/load test: redirect cache hit ratio, notification provider quotas, chat concurrent connections, inventory contention. Những giả thuyết này quyết định liệu cần sharding, specialized storage hay chỉ index/queue tốt.
 
 ## 5. Lỗi thường gặp / Pitfalls

@@ -26,8 +26,14 @@ Value Object enforce money currency/amount invariant; domain logic không phụ 
 type Currency = 'USD' | 'EUR';
 
 class Money {
-	constructor(readonly minorUnits: number, readonly currency: Currency) {
+	readonly minorUnits: number;
+	readonly currency: Currency;
+
+	constructor(minorUnits: number, currency: Currency) {
 		if (!Number.isSafeInteger(minorUnits)) throw new RangeError('Invalid amount');
+		this.minorUnits = minorUnits;
+		this.currency = currency;
+		Object.freeze(this);
 	}
 
 	add(other: Money): Money {
@@ -37,7 +43,7 @@ class Money {
 }
 ```
 
-Production money model cần rounding/exchange-rate policy; đây là ví dụ domain invariant, không phải full accounting implementation.
+TypeScript readonly chỉ ngăn gán qua type checking; ví dụ còn dùng Object.freeze để khóa các own properties ở runtime. Freeze chỉ shallow, nhưng hai field ở đây đều primitive. Validate currency tại boundary nếu dữ liệu đến từ JSON/JavaScript. Production money model cần rounding/exchange-rate policy; đây là ví dụ domain invariant, không phải full accounting implementation.
 
 ## 4. Trade-off & Best practices
 
@@ -46,7 +52,6 @@ Production money model cần rounding/exchange-rate policy; đây là ví dụ d
 - Aggregate transaction scope giữ invariant; entity khác aggregate giao tiếp qua IDs/domain events, không load giant object graph.
 - CQRS chỉ khi read/write models có nhu cầu khác biệt rõ; bắt đầu synchronous/same DB nếu đủ.
 - Event Sourcing khi history/audit/replay/domain events là requirement cốt lõi, không chỉ vì cần event bus.
-- Với projections, theo dõi lag, idempotent handlers, rebuild/checkpoint và versioned event schema.
 - Với projections, theo dõi lag, idempotent handlers, rebuild/checkpoint và versioned event schema.
 - Đừng để aggregates thay thế application workflow orchestration: use case có thể điều phối nhiều aggregates nhưng invariants cục bộ vẫn thuộc từng aggregate root. Integration events chỉ phát sau commit và không nên leak internal domain model.
 - Thực thi privacy/retention legally; immutable event log có thể cần crypto-shredding/tokenization thay xóa event đơn giản.

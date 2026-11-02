@@ -14,7 +14,7 @@
 
 JSX compile thành React element descriptions, không phải DOM node. Khi state/props đổi, React gọi component để tạo output mới rồi reconcile element tree. React tối ưu bằng heuristics thay vì tìm tree edit distance tối ưu tổng quát. Cùng type ở cùng vị trí thường được reuse; khác type thường unmount/mount subtree. Host renderer (React DOM/native) quyết định cách commit changes.
 
-Fiber là data structure cho mỗi component/host node cùng scheduling metadata, parent/child/sibling links, lanes/priority và effect flags. Concurrent rendering cho phép React bắt đầu work, yield, tiếp tục hoặc bỏ work cũ nếu update mới ưu tiên hơn. Render phase phải pure: side effects ở render có thể chạy lại và gây bug. Commit phase áp dụng DOM mutations, refs và layout/effects theo lifecycle đã định; commit không bị interrupt giữa chừng như render work.
+Fiber là data structure cho mỗi component/host node cùng scheduling metadata, parent/child/sibling links, lanes/priority và effect flags. Concurrent rendering cho phép React bắt đầu work, yield, tiếp tục hoặc bỏ work cũ nếu update mới ưu tiên hơn. Render phase phải pure: side effects ở render có thể chạy lại và gây bug. Commit phase áp dụng DOM mutations, refs và layout effects; passive effects (`useEffect`) được flush riêng sau commit, không nhất thiết trước browser paint; commit không bị interrupt giữa chừng như render work.
 
 Keys disambiguate sibling identity khi list thay đổi. Key chỉ cần unique trong sibling set, không phải toàn app. React dùng key cùng element type và vị trí để quyết định component instance/state có được reuse. Stable database ID thường tốt; index chỉ an toàn cho list tĩnh không reorder/insert/remove. Random key mỗi render buộc remount, mất local state và DOM continuity.
 
@@ -83,7 +83,7 @@ Key giúp giữ identity giữa các renders. Stable key đảm bảo state/focu
 <details>
 <summary><b>Q4. Render phase khác commit phase?</b></summary>
 
-Render tính cây output và có thể bị restart/abandon; commit áp dụng host mutations và effects. Render phải pure vì không đảm bảo chạy đúng một lần.
+Render tính cây output và có thể bị restart/abandon; commit áp dụng host mutations, refs và layout effects; passive effects được flush sau commit. Render phải pure vì không đảm bảo chạy đúng một lần.
 
 </details>
 

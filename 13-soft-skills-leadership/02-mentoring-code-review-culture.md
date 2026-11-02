@@ -39,8 +39,6 @@ may avoid the sort at current volume; can we confirm with EXPLAIN before merging
 - Model respectful disagreement and admit reviewer uncertainty; invite domain experts/security when needed.
 - Rotate review ownership, set response-time expectations and recognize mentoring as engineering work.
 - For recurring feedback, pair live or document shared pattern rather than repeating comments ad hoc.
-- For recurring feedback, pair live or document shared pattern rather than repeating comments ad hoc.
-- Mentoring progress có thể đo bằng scope mentee tự sở hữu, quality of decisions, collaboration feedback và khả năng debug độc lập; không đo bằng số buổi pairing. Check-in hai chiều giúp mentor điều chỉnh support thay vì áp một curriculum chung cho mọi người.
 - Mentoring progress có thể đo bằng scope mentee tự sở hữu, quality of decisions, collaboration feedback và khả năng debug độc lập; không đo bằng số buổi pairing. Check-in hai chiều giúp mentor điều chỉnh support thay vì áp một curriculum chung cho mọi người.
 - Agree một goal trong chu kỳ ngắn, ví dụ tự điều phối một design review hoặc on-call task với mentor backup. Sau đó debrief cả quyết định tốt, uncertainty và support nào còn thiếu; thay đổi ownership dần để người học có safe stretch assignment nhưng không phải chịu blast radius vượt năng lực/authority.
 

@@ -20,14 +20,14 @@ SSR yêu cầu output server/client tương thích để hydration. Non-determin
 
 ## 3. Code ví dụ
 
-Nuxt page lấy route param và dữ liệu bằng `useAsyncData`; API response cần validate khi data boundary không tin cậy.
+Ví dụ dùng Nuxt 3.17+ (hỗ trợ reactive key) lấy route param và dữ liệu bằng `useAsyncData`; API response cần validate khi data boundary không tin cậy.
 
 ```vue
 <script setup lang="ts">
 const route = useRoute()
 const productId = computed(() => String(route.params.id))
 
-const { data: product, pending, error } = await useAsyncData(
+const { data: product, pending, error } = await useAsyncData<{ id: string; name: string }>(
 	() => `product:${productId.value}`,
 	() => $fetch(`/api/products/${encodeURIComponent(productId.value)}`),
 )
@@ -55,7 +55,7 @@ Key factory giúp phân biệt data theo route ID; với route changes Nuxt có 
 ## 5. Lỗi thường gặp / Pitfalls
 
 - Gọi `window`/`localStorage` trong code chạy server.
-- Dùng `$fetch` tùy tiện trong mounted hook gây request duplicate sau hydration.
+- Gọi `$fetch` trực tiếp ở universal setup có thể fetch cả server và client mà không tái dùng SSR payload. Gọi chỉ trong onMounted không tự tạo request server trùng, nhưng dữ liệu đó không có trong HTML SSR.
 - `useAsyncData` key static cho data phụ thuộc route/user, trả nhầm cache entry.
 - Serialize API tokens/private data vào payload có thể tải về browser.
 - Coi `routeRules` cache semantics giống nhau trên Node server, static hosting và edge adapter.
@@ -110,3 +110,5 @@ Server/client khác dữ liệu/time/locale, browser-only branches hoặc random
 - [Nuxt 3: Data Fetching](https://nuxt.com/docs/3.x/getting-started/data-fetching)
 - [Nuxt 3: Route Rules](https://nuxt.com/docs/3.x/guide/concepts/rendering#hybrid-rendering)
 - [Nuxt 3: Server Directory](https://nuxt.com/docs/3.x/guide/directory-structure/server)
+
+- [Nuxt 3.17: reactive keys trong useAsyncData](https://github.com/nuxt/nuxt/releases/tag/v3.17.0)

@@ -22,32 +22,35 @@ OpenAPI mô tả paths, operations, parameters, request/response schemas, securi
 
 ## 3. Code ví dụ
 
-OpenAPI 3.1 operation với auth scope, bounded pagination và response errors.
+OpenAPI 3.1 operation với bearer authentication (không khai báo OAuth scope), bounded pagination và response errors.
 
 ```yaml
 openapi: 3.1.0
+info:
+  title: Orders API
+  version: 1.0.0
 paths:
-	/v1/orders:
-		get:
-			operationId: listOrders
-			security:
-				- bearerAuth: []
-			parameters:
-				- name: limit
-					in: query
-					schema: { type: integer, minimum: 1, maximum: 100, default: 25 }
-			responses:
-				'200':
-					description: A page of orders
-				'401':
-					description: Authentication required
-				'429':
-					description: Rate limit exceeded
+  /v1/orders:
+    get:
+      operationId: listOrders
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 25 }
+      responses:
+        '200':
+          description: A page of orders
+        '401':
+          description: Authentication required
+        '429':
+          description: Rate limit exceeded
 components:
-	securitySchemes:
-		bearerAuth:
-			type: http
-			scheme: bearer
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
 ```
 
 Thêm schemas cho request/response/errors thực tế; generated client không thay runtime validation hoặc backward-compatibility policy.
@@ -120,3 +123,5 @@ Review spec cùng code, lint/schema validation, generated client/contract tests 
 - [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
 - [Envoy: Global rate limiting](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/other_features/global_rate_limiting)
 - [Google API Design Guide](https://cloud.google.com/apis/design)
+
+- [OpenAPI 3.1.0 Specification](https://spec.openapis.org/oas/v3.1.0)

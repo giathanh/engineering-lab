@@ -4,9 +4,9 @@
 
 ## 1. Tóm tắt nhanh (TL;DR)
 
-- REST API thiết kế resource-oriented URLs, HTTP method semantics, status codes và representation contract nhất quán.
+- REST là phong cách kiến trúc với client–server, statelessness, cacheability, uniform interface, layered system và tùy chọn code-on-demand; hypermedia là một ràng buộc của uniform interface. Bài này tập trung thực hành HTTP API hướng resource thường được gọi là REST API.
 - Idempotency liên quan effect của request lặp; `PUT`/`DELETE` có semantics idempotent theo HTTP, `POST` thường cần key cho retry-safe creation/payment.
-- Pagination nên có deterministic ordering; cursor/keyset ổn định hơn offset khi dataset lớn/thay đổi liên tục.
+- Pagination nên có deterministic ordering; cursor/keyset thường ổn định hơn offset khi dataset lớn/thay đổi liên tục.
 - Versioning qua path/header/media type đều có trade-off; ưu tiên backward-compatible additive evolution trước major version.
 - API contract gồm validation/errors, auth, rate limits, observability, deprecation và compatibility—not chỉ endpoint naming.
 
@@ -16,9 +16,9 @@ Resource URL dùng nouns/relationships (`/orders/{id}/items`), HTTP method biể
 
 Representation nên có schema rõ, timestamps/IDs consistent, enum policy và nullable semantics. Error response nên có stable machine-readable code, message safe, field errors và request/correlation ID; không trả stack/SQL. Validation ở boundary và authorization tại resource/action.
 
-Offset pagination dễ implement nhưng cost tăng với offset lớn và concurrent inserts có thể duplicate/skip rows. Cursor pagination encode stable sort key(s) (e.g. created_at+id), thường dùng keyset condition; opaque cursor không phải auth token. Ordering phải deterministic. Page size có upper bound.
+Offset pagination dễ implement nhưng cost tăng với offset lớn và concurrent inserts có thể duplicate/skip rows. Cursor pagination encode stable sort key(s) (e.g. created_at+id), thường dùng keyset condition; opaque cursor không phải auth token. Ordering phải deterministic; keyset không tự tạo snapshot xuyên pages, và cập nhật sort key vẫn có thể làm bản ghi bị lặp/bỏ qua. Page size có upper bound.
 
-Idempotency key được client gửi cho operation có side effect; server lưu key + request fingerprint + result trong transaction để duplicate requests trả cùng outcome. TTL/ownership/replay conflict semantics cần rõ. Versioning URL dễ vận hành nhưng tạo parallel surfaces; header/media type tinh tế hơn nhưng khó inspect. Deprecation policy cần telemetry consumer, communication và sunset timeline.
+Idempotency key được client gửi cho operation có side effect; server claim key atomically, lưu request fingerprint và trạng thái/result gắn với business transaction để duplicate requests trả cùng outcome. TTL/ownership/replay conflict semantics cần rõ. Với payment bên ngoài DB, cần dùng thêm idempotency của provider và reconciliation; DB transaction local không bao trùm remote side effect. Versioning URL dễ vận hành nhưng tạo parallel surfaces; header/media type tinh tế hơn nhưng khó inspect. Deprecation policy cần telemetry consumer, communication và sunset timeline.
 
 ## 3. Code ví dụ
 

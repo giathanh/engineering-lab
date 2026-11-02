@@ -14,26 +14,28 @@
 
 Lifecycle chính gồm setup, beforeMount/mounted, beforeUpdate/updated, beforeUnmount/unmounted; Composition API expose tương ứng `onMounted`, `onUpdated`, `onUnmounted`. `setup` chạy mỗi instance trước mount; `onMounted` DOM hiện diện nhưng không đồng nghĩa toàn bộ async child/Suspense đã hoàn tất. `onUnmounted` là nơi dọn timers, event listeners, observers và subscriptions.
 
-Vue template compiler biết phần nào static/dynamic. Static hoisting tạo node reuse; patch flags mô tả dynamic properties cần update; block tree theo dõi dynamic children để tránh diff toàn subtree. Runtime vẫn cần virtual DOM và diff cho dynamic behavior. Compiler macros (`v-once`, `v-memo`) có thể skip work khi assumptions đúng, nhưng memo condition sai sẽ làm UI stale.
+Vue template compiler biết phần nào static/dynamic. Static hoisting tạo node reuse; patch flags mô tả dynamic properties cần update; block tree theo dõi dynamic children để tránh diff toàn subtree. Runtime vẫn cần virtual DOM và diff cho dynamic behavior. Template directives (`v-once`, `v-memo`) có thể skip work khi assumptions đúng, nhưng memo condition sai sẽ làm UI stale.
 
 State update được scheduler batch; DOM patch xảy ra sau synchronous code. `await nextTick()` chờ DOM update flush trước khi đo geometry/focus. Lifecycle `updated` không nên mutate state liên tục vì có thể tạo update loop. `KeepAlive` cache component instance và có activated/deactivated lifecycle; unmount cleanup không chạy khi chỉ deactivated.
 
 ## 3. Code ví dụ
 
-Component tạo observer sau mount và cleanup lúc unmount. `nextTick` bảo đảm DOM đã reflect state trước khi focus.
+Component theo dõi template ref để tạo observer khi input có v-if thật sự xuất hiện, và cleanup lúc unmount. `nextTick` bảo đảm DOM đã reflect state trước khi focus.
 
 ```vue
 <script setup lang="ts">
-import { nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { nextTick, onUnmounted, ref, watch } from 'vue'
 
 const ready = ref(false)
 const target = ref<HTMLElement | null>(null)
 let observer: ResizeObserver | undefined
 
-onMounted(() => {
-	if (target.value) observer = new ResizeObserver(() => console.log('resized'))
-	if (target.value) observer?.observe(target.value)
-})
+watch(target, (element) => {
+	observer?.disconnect()
+	if (!element) return
+	observer = new ResizeObserver(() => console.log('resized'))
+	observer.observe(element)
+}, { flush: 'post' })
 
 async function showAndFocus() {
 	ready.value = true
@@ -58,7 +60,6 @@ onUnmounted(() => observer?.disconnect())
 - Dùng `nextTick` chỉ khi thật sự cần DOM đã update; không chèn await sau mỗi state mutation.
 - Virtualize large collections; compiler hoisting không xóa cost của hàng nghìn DOM nodes.
 - Dùng `v-once` cho content bất biến; `v-memo` chỉ khi dependency list đầy đủ và đã profile.
-- Đo Vue Devtools performance, browser flame chart, layout/paint và memory trên production build.
 - Đo Vue Devtools performance, browser flame chart, layout/paint và memory trên production build.
 - Component virtualization cần preserve keyboard focus khi item unmount/remount; test screen reader labels, scroll restoration và dynamic row heights. Với virtual list, cache measurement có thể thành stale sau font/viewport changes nên cần invalidation strategy.
 

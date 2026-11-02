@@ -1,12 +1,20 @@
 # Engineering Lab – Ôn tập Senior Fullstack (PHP · Node.js · React/Vue)
 
-Bộ tài liệu ôn tập kiến thức cần và đủ của một Senior Developer để đi phỏng vấn và cập nhật CV.
+Bộ tài liệu ôn tập cho phỏng vấn Senior Fullstack và chuẩn bị CV. Phạm vi cần ôn phụ thuộc role, stack và kinh nghiệm; hoàn thành tài liệu không tự chứng minh seniority.
 
 ## Cách dùng
 
 1. Mỗi bài là một file markdown, viết theo [template chuẩn](_templates/topic-template.md).
 2. Nội dung chi tiết được tạo bằng AI theo [prompt mẫu](_templates/ai-prompt.md).
 3. Ôn xong bài nào: tự trả lời phần **Câu hỏi phỏng vấn** không nhìn đáp án, rồi tick `[x]` bên dưới.
+
+## Phạm vi và cách hiểu ví dụ
+
+- Đã review nội dung 93 bài ngày **02/11/2026**; xem [ghi nhận review](REVIEW.md) để biết thay đổi và giới hạn kiểm chứng.
+- Phiên bản được nêu trong bài là **mốc minh họa**, không phải tuyên bố phiên bản mới nhất hay còn trong thời hạn hỗ trợ. Các bài Laravel dùng 11.x, PHP dùng cú pháp 8.3+, Node dùng 22, React có API riêng 19/19.2, Vue có API riêng 3.4/3.5; Next/Nuxt ghi mốc ở ví dụ khi cần.
+- Code có application types, database, endpoint hoặc framework config là đoạn tích hợp cần context tương ứng; pseudocode được ghi rõ và không phải chương trình độc lập.
+- Các bullet CV với `[A]`, `[B]`, `[N]` là **khung viết**. Chỉ điền kinh nghiệm và số liệu có thể chứng minh; không suy ra quan hệ nhân quả từ việc dùng một công nghệ.
+- Các khuyến nghị “thường”, “có thể” cần được đọc cùng assumptions, workload và phiên bản. Đối chiếu official docs của project trước khi áp dụng.
 
 ## Xem dạng HTML & deploy Vercel
 

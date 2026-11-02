@@ -49,7 +49,6 @@ Trong component: `const cart = useCartStore(); const { items, totalItems } = sto
 - Dùng lazy routes theo route boundaries; preload routes thường dùng khi metrics cho thấy lợi ích.
 - Normalize query params và giữ filter/search state trong URL nếu cần deep-link/back-forward behavior.
 - Quản lý async navigation/data loading, cancellation, stale route responses và error route UI.
-- Quản lý async navigation/data loading, cancellation, stale route responses và error route UI.
 - Nếu store persist vào storage, hydrate trước các routes phụ thuộc state nhưng không để hydration chặn public routes không cần auth. Version persisted schema và có fallback khi dữ liệu client cũ không parse được.
 
 ## 5. Lỗi thường gặp / Pitfalls

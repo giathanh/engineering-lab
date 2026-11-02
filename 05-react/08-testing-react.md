@@ -23,6 +23,7 @@ MSW intercepts network request ở browser/Node boundary. Test handler cho respo
 Test form tương tác với RTL và user-event; component `LoginForm` được kiểm tra qua label/status chứ không inspect hooks.
 
 ```tsx
+import { it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { LoginForm } from './LoginForm';
@@ -47,7 +48,6 @@ Trong Jest thay `vi.fn()` bằng `jest.fn()`; test runner cần jsdom và setup 
 - Khởi tạo providers/cache mới mỗi test; cleanup automatically hoặc explicit, reset MSW handlers/mocks/timers.
 - Async: await `user` calls, dùng `findBy` cho appearance và `waitFor` cho condition không gắn element query.
 - Test keyboard/focus và accessible name cho custom controls; screenshot tests không thay behavior/accessibility tests.
-- Giữ component tests nhanh; các luồng auth/navigation/backend thật thuộc integration/e2e suite.
 - Giữ component tests nhanh; các luồng auth/navigation/backend thật thuộc integration/e2e suite.
 - Test Strict Mode và cleanup behavior khi component subscribe/tạo resource; development có thể chạy setup-cleanup thêm để phát hiện effect không đối xứng.
 - Với async UI, assert transition theo user-visible state thay vì chờ implementation-specific request; MSW có thể mô phỏng latency/error để xác minh pending và retry UX.

@@ -20,7 +20,7 @@ Sharding đặt subsets dữ liệu trên node riêng theo shard key. Shard key 
 
 Connection pool giữ số connections bounded, reuse them và queue khi hết slots. Pooling giải quyết connection overhead/limit, không tăng DB execution capacity. Oversized pools gây context switching/memory/locks và DB overload. Proxy pools có transaction/session pooling semantics khác nhau; server-side prepared statements/session state cần kiểm tra compatibility.
 
-CAP: khi network partition xảy ra, distributed data system không thể đồng thời guarantee strict consistency và availability cho mọi request; partition tolerance là thực tế phải xử lý. CAP không phải lựa chọn thường trực giữa C/A trong điều kiện bình thường; latency, replication model và operation semantics còn quan trọng.
+CAP: khi network partition xảy ra, distributed data system không thể đồng thời guarantee linearizability (C) và mọi request tới node còn hoạt động đều nhận response hoàn tất theo định nghĩa CAP (A). Đây không phải consistency của ACID hay uptime phần trăm; partition tolerance là thực tế phải xử lý. CAP không phải lựa chọn thường trực giữa C/A trong điều kiện bình thường; latency, replication model và operation semantics còn quan trọng.
 
 ## 3. Code ví dụ
 
@@ -53,7 +53,6 @@ Range predicate giúp partition pruning; unique constraints/primary key trên pa
 - Chọn shard key để phân phối write/read, giữ query locality và tránh hot tenants; plan cross-shard operations/rebalancing.
 - Tính pool budget: app replicas × workers × per-process pool ≤ safe DB/proxy connection capacity, chừa admin/migration headroom.
 - Throttle backfills/replication catch-up; theo dõi lag, error rate và resource headroom khi migration.
-- Định nghĩa RPO/RTO, backup/PITR, failover fencing và restore drills; replication không thay backup.
 - Định nghĩa RPO/RTO, backup/PITR, failover fencing và restore drills; replication không thay backup.
 
 ## 5. Lỗi thường gặp / Pitfalls

@@ -5,26 +5,29 @@
 ## 1. Tóm tắt nhanh (TL;DR)
 
 - Big-O mô tả tốc độ tăng của thời gian hoặc bộ nhớ theo kích thước input, không phải số mili giây cố định.
-- Array/list tối ưu truy cập theo index; hash map tối ưu lookup trung bình; tree giữ cấu trúc thứ tự; heap tối ưu lấy min/max; graph mô hình hóa quan hệ tổng quát.
+- Dynamic array tối ưu truy cập theo index; linked list phải duyệt O(n) để đến index; hash map tối ưu lookup trung bình; search tree giữ thứ tự theo key; heap tối ưu lấy min/max; graph mô hình hóa quan hệ tổng quát.
 - Phân biệt worst-case, average-case và amortized complexity. Append của dynamic array thường amortized O(1), dù đôi lúc phải resize O(n).
 - Chọn cấu trúc theo thao tác nóng, thứ tự, memory overhead, tính ổn định và invariant cần duy trì.
 - Big-O tốt không tự động nhanh hơn: constant factor, locality, allocation và kích thước dữ liệu thực tế đều ảnh hưởng.
 
 ## 2. Khái niệm cốt lõi
 
-Big-O là cận tiệm cận khi input $n$ tăng. Bỏ qua constant và thành phần bậc thấp: $3n^2 + 5n + 2$ là O($n^2$). Khi phân tích code, xác định đơn vị input, số lần lặp lồng nhau, chi phí thao tác bên trong và memory phụ. Hai vòng lặp nối tiếp thường O(n), còn lồng nhau thường O(n²), nhưng vòng lặp trong chạy log n thì là O(n log n).
+Big-O là **cận trên tiệm cận**, Big-Ω là cận dưới và Big-Θ là cận chặt. Ví dụ `3n² + 5n + 2` thuộc Θ(n²), nên cũng thuộc O(n²) và O(n³); khi phỏng vấn thường nêu cận chặt nhất tìm được. Big-O không đồng nghĩa worst-case: có thể nêu cận Big-O cho worst-case, expected hoặc amortized cost, nhưng phải ghi rõ đang phân tích loại nào. Khi phân tích code, xác định đơn vị input, số lần lặp lồng nhau, chi phí thao tác bên trong và memory phụ. Hai vòng lặp nối tiếp thường O(n), còn lồng nhau thường O(n²), nhưng vòng lặp trong chạy log n thì là O(n log n).
 
 | Cấu trúc | Truy cập/tìm kiếm | Thêm/xóa phổ biến | Điểm cần nhớ |
 |---|---:|---:|---|
-| Dynamic array | index O(1), tìm value O(n) | cuối amortized O(1), giữa O(n) | contiguous, locality tốt, resize có thể copy |
-| Hash map | trung bình O(1), worst O(n) | trung bình O(1) | cần hash/equality đúng; tốn bucket/metadata |
+| Dynamic array | index O(1), tìm value O(n) | append/pop cuối amortized O(1), thêm/xóa giữa O(n) | vùng chứa phần tử/tham chiếu liên tiếp, resize có thể copy |
+| Linked list | index/tìm value O(n) | thêm/xóa O(1) khi đã có node và các liên kết cần thiết | tìm vị trí vẫn O(n); tốn con trỏ, locality kém |
+| Hash map | trung bình O(1), worst O(n) | expected/amortized O(1) | cần hash/equality đúng; tốn bucket/metadata |
 | Balanced BST | O(log n) | O(log n) | giữ thứ tự; tree không cân bằng có thể O(n) |
 | Binary heap | top O(1), tìm tùy ý O(n) | push/pop O(log n) | phù hợp priority queue, không phải sorted array |
 | Graph adjacency list | duyệt O(V + E) | tùy cấu trúc | hợp graph thưa; adjacency matrix tốn O(V²) |
 
+Bảng trên giả định hash/equality/comparison có chi phí O(1), và hash table giữ load factor hợp lý. Binary heap có thể build từ n phần tử bằng bottom-up heapify trong O(n). Các cấu trúc trừu tượng này không đồng nhất với mọi container trong ngôn ngữ: PHP array là ordered map; JavaScript Array có thể có holes và representation phụ thuộc engine.
+
 Hash map ánh xạ key qua hash function vào bucket. Collision được xử lý bằng chiến lược nội bộ; nếu hash distribution xấu, thao tác có thể suy giảm. Key phải có equality/hash semantics ổn định trong thời gian lưu. Tree có invariant về thứ tự và cân bằng; AVL/Red-Black tree bảo đảm chiều cao logarithmic. Heap chỉ bảo đảm quan hệ cha-con theo priority, không sắp xếp toàn bộ phần tử.
 
-Amortized analysis tính chi phí trung bình trên chuỗi thao tác, không phải xác suất. Dynamic array tăng capacity theo cấp số nhân: một lần append gây resize O(n), nhưng tổng chi phí n lần append là O(n), nên mỗi append amortized O(1). Space complexity cũng cần xét: recursive DFS có thể dùng O(depth) stack; BFS có thể giữ frontier lớn O(V).
+Amortized analysis tính chi phí trung bình trên chuỗi thao tác, không phải xác suất. Dynamic array tăng capacity theo cấp số nhân: một lần append gây resize O(n), nhưng tổng chi phí n lần append là O(n), nên mỗi append amortized O(1). Space complexity cũng cần xét: recursive DFS dùng O(depth) call stack, nhưng với graph tổng bộ nhớ phụ thường là O(V) do visited; BFS cũng cần O(V) cho queue và visited.
 
 ## 3. Code ví dụ
 
@@ -43,7 +46,7 @@ console.log([...frequencies(['a', 'b', 'a'])]);
 // [['a', 2], ['b', 1]]
 ```
 
-Với n phần tử, cách này trung bình O(n) thời gian và O(k) bộ nhớ cho k key riêng biệt. Cách tạo `new Set(values).map(value => values.filter(...))` có thể lên O(n²). Tuy nhiên, nếu input quá lớn không vừa memory, cần streaming count, partition hoặc external aggregation thay vì giữ toàn bộ map.
+Với n phần tử, cách này có expected O(n) thời gian trên implementation Map dạng hash table thông dụng và O(k) bộ nhớ cho k key riêng biệt. ECMAScript chỉ yêu cầu Map có thời gian truy cập trung bình dưới tuyến tính, không cam kết O(1). Cách `[...new Set(values)].map(value => values.filter(item => item === value).length)` tốn O(nk), worst-case O(n²); cần chuyển Set thành array vì Set không có method `map`. Ví dụ so sánh này chỉ xét string như input trên; với NaN, `===` khác SameValueZero của Map/Set. Nếu input quá lớn không vừa memory, streaming chỉ giảm bộ nhớ lưu input; map vẫn tăng theo k. Khi k quá lớn, cần partition hoặc external aggregation.
 
 ## 4. Trade-off & Best practices
 
@@ -66,9 +69,9 @@ Với n phần tử, cách này trung bình O(n) thời gian và O(k) bộ nhớ
 ## 6. Câu hỏi phỏng vấn
 
 <details>
-<summary><b>Q1. O(n) và amortized O(1) khác nhau thế nào?</b></summary>
+<summary><b>Q1. Worst-case O(n) và amortized O(1) có thể cùng đúng không?</b></summary>
 
-O(n) mô tả một thao tác có chi phí tăng tuyến tính; amortized O(1) nghĩa là chi phí trung bình trên chuỗi thao tác bị chặn hằng số, dù một số thao tác riêng lẻ đắt hơn.
+Có. Append dynamic array có worst-case O(n) khi resize, nhưng n lần append từ mảng rỗng chỉ tốn O(n) tổng thời gian nếu capacity tăng theo cấp số nhân, nên amortized O(1) mỗi lần. Amortized là bảo đảm trên chuỗi thao tác, không phải average-case dựa trên phân phối xác suất input.
 
 </details>
 
@@ -118,3 +121,5 @@ Không kết luận máy móc là O(n²); xem số vòng thực tế. Nếu inne
 - [MDN: Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)
 - [MIT OpenCourseWare: Introduction to Algorithms](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-fall-2011/)
 - [Open Data Structures](https://opendatastructures.org/)
+
+- [ECMAScript: Map objects — yêu cầu complexity](https://tc39.es/ecma262/multipage/keyed-collections.html#sec-map-objects)

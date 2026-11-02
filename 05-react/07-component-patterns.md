@@ -38,7 +38,7 @@ export function TabsRoot({ value, onValueChange, children }) {
 export function TabsTrigger({ value, children }) {
 	const tabs = useContext(TabsContext);
 	if (!tabs) throw new Error('TabsTrigger must be inside TabsRoot');
-	return <button aria-selected={tabs.value === value} onClick={() => tabs.onValueChange(value)}>{children}</button>;
+	return <button type="button" role="tab" aria-selected={tabs.value === value} onClick={() => tabs.onValueChange(value)}>{children}</button>;
 }
 ```
 

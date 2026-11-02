@@ -16,7 +16,7 @@ Process là đơn vị isolation của OS với virtual address space riêng; gi
 
 Concurrency mô tả cấu trúc chương trình có nhiều task tiến triển độc lập. Trên một core, scheduler có thể interleave chúng; trên nhiều core, chúng có thể chạy song song. Async I/O không nhất thiết tạo thread: task đăng ký chờ completion và thread tiếp tục làm việc khác. CPU-bound task vẫn cần CPU; muốn parallelism cần worker/process hoặc runtime support.
 
-Race condition là lỗi logic do kết quả phụ thuộc thứ tự thực thi không được đảm bảo. Ví dụ `balance -= amount` gồm đọc, kiểm tra, ghi; nếu có await/context switch hoặc nhiều thread/process, hai tác vụ có thể cùng đọc số dư cũ. Atomicity của một operation cấp thấp không làm chuỗi nghiệp vụ nhiều bước trở thành transaction.
+Race condition là lỗi logic do kết quả phụ thuộc thứ tự thực thi không được đảm bảo. Ví dụ kiểm tra đủ số dư rồi chạy `balance -= amount` là chuỗi đọc–kiểm tra–ghi; bản thân phép `-=` chỉ đọc–tính–ghi; nếu có await/context switch hoặc nhiều thread/process, hai tác vụ có thể cùng đọc số dư cũ. Atomicity của một operation cấp thấp không làm chuỗi nghiệp vụ nhiều bước trở thành transaction.
 
 Mutex/lock cho phép một owner vào critical section; semaphore giới hạn số task đồng thời; condition variable/event hỗ trợ chờ state predicate; message passing giảm chia sẻ mutable state. Distributed systems không thể dựa vào in-process mutex để khóa giữa nhiều instance; cần database transaction/lock, distributed coordination hoặc thiết kế idempotent.
 
@@ -36,10 +36,10 @@ async function withdraw(amount) {
 }
 
 await Promise.all([withdraw(80), withdraw(80)]);
-console.log(balance); // May be 20 even though both withdrawals passed.
+console.log(balance); // 20: both checks pass in this exact example; one update is lost.
 ```
 
-Trong ứng dụng thật, sửa bằng atomic transaction tại nơi state được sở hữu (ví dụ SQL `UPDATE ... WHERE balance >= amount` trong transaction), không phải thêm mutex local nếu có nhiều process. In-memory mutex chỉ giải quyết race trong một process.
+Trong ứng dụng thật, sửa tại nơi sở hữu state bằng conditional update, ví dụ SQL `UPDATE accounts SET balance = balance - :amount WHERE id = :id AND balance >= :amount` và kiểm tra affected rows. Nếu còn ghi ledger, ghép update và ledger trong một transaction. Mutex local không bảo vệ được invariant giữa nhiều process. In-memory mutex chỉ giải quyết race trong một process.
 
 ## 4. Trade-off & Best practices
 

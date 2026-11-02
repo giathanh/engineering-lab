@@ -37,7 +37,7 @@ sequenceDiagram
 
 ## 3. Code ví dụ
 
-Đo thời gian compile/run ở môi trường cụ thể bằng `opcache_get_status`; hàm có thể trả `false` nếu OPcache chưa bật hoặc status bị giới hạn. Không dùng code này làm endpoint công khai.
+Quan sát số script cached, memory và hit rate bằng `opcache_get_status` (không trực tiếp đo thời gian compile/run); hàm có thể trả `false` nếu OPcache chưa bật hoặc status bị giới hạn. Không dùng code này làm endpoint công khai.
 
 ```php
 <?php

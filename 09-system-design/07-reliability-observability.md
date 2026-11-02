@@ -23,7 +23,8 @@ Observability: logs ghi event/context; metrics là time-series aggregate cho ale
 Retry có bounded attempts, exponential backoff+jitter cho operation idempotent; production nên nhận AbortSignal/deadline.
 
 ```ts
-async function retry<T>(operation: () => Promise<T>, attempts = 3): Promise<T> {
+async function retry<T>(operation: () => Promise<T>, isTransient: (error: unknown) => boolean, attempts = 3): Promise<T> {
+	if (!Number.isInteger(attempts) || attempts < 1) throw new RangeError('Invalid attempts');
 	for (let attempt = 0; ; attempt++) {
 		try {
 			return await operation();
@@ -46,11 +47,11 @@ async function retry<T>(operation: () => Promise<T>, attempts = 3): Promise<T> {
 - Define SLI from user outcome (successful requests/latency), SLO with window and exclusions documented.
 - Trace context through HTTP, jobs and message headers; avoid sensitive data in baggage/logs.
 - Alert on SLO burn rate/user symptoms; keep dashboards for diagnosis and test failure drills.
+- Failure drills có thể bắt đầu ở staging/game day: tắt dependency, inject latency, fill queue hoặc revoke credential trong scope có kiểm soát. Đo detection/mitigation, verify rollback and recovery, rồi cập nhật runbooks; không chaos-test production nếu blast radius chưa được giới hạn.
+- Khi full functionality không thể duy trì, thiết kế graceful degradation theo thứ tự ưu tiên: reject low-value work, serve stale-but-safe data, preserve critical writes và expose degraded status. Đây là business decision cần PO/operations agreement, không nên để từng service tự fallback tùy ý.
 
 ## 5. Lỗi thường gặp / Pitfalls
 
-- Failure drills có thể bắt đầu ở staging/game day: tắt dependency, inject latency, fill queue hoặc revoke credential trong scope có kiểm soát. Đo detection/mitigation, verify rollback and recovery, rồi cập nhật runbooks; không chaos-test production nếu blast radius chưa được giới hạn.
-- Khi full functionality không thể duy trì, thiết kế graceful degradation theo thứ tự ưu tiên: reject low-value work, serve stale-but-safe data, preserve critical writes và expose degraded status. Đây là business decision cần PO/operations agreement, không nên để từng service tự fallback tùy ý.
 
 - Retry every error at client, gateway, service and SDK layers, multiplying traffic.
 - Retry non-idempotent operation after timeout, duplicate charge/order.

@@ -22,7 +22,7 @@ Schema evolution phải tương thích readers/writers đang deploy: expand (th�
 
 ## 3. Code ví dụ
 
-DDL cho M:N membership với role và unique constraint bảo vệ invariant. Cú pháp gần PostgreSQL.
+DDL cho M:N membership với role và unique constraint bảo vệ invariant. Cú pháp PostgreSQL; giả định bảng users(id BIGINT PRIMARY KEY) đã tồn tại.
 
 ```sql
 CREATE TABLE teams (

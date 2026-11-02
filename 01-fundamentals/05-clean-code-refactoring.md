@@ -14,7 +14,7 @@
 
 Maintainability là khả năng hiểu, sửa, test và vận hành code trong tương lai. Readability phụ thuộc context và naming, không chỉ style guide. Một abstraction tốt làm domain concept rõ hơn; abstraction sai làm người đọc phải đi qua nhiều file mới hiểu một phép biến đổi đơn giản.
 
-Smell thường gặp: **Long Method** (nhiều lý do/thao tác), **Feature Envy** (logic dùng dữ liệu object khác nhiều hơn dữ liệu của nó), **Shotgun Surgery** (một thay đổi phải sửa nhiều nơi), **Divergent Change** (một module thay vì nhiều lý do), **Primitive Obsession** (dùng primitive thay cho concept có invariant), **Duplicated Knowledge** (một business rule có nhiều nguồn sự thật). Smell gợi câu hỏi; đôi khi code lặp được chủ ý để domain khác nhau tiến hóa độc lập.
+Smell thường gặp: **Long Method** (nhiều lý do/thao tác), **Feature Envy** (logic dùng dữ liệu object khác nhiều hơn dữ liệu của nó), **Shotgun Surgery** (một thay đổi phải sửa nhiều nơi), **Divergent Change** (một module phải thay đổi vì nhiều nhóm lý do khác nhau), **Primitive Obsession** (dùng primitive thay cho concept có invariant), **Duplicated Knowledge** (một business rule có nhiều nguồn sự thật). Smell gợi câu hỏi; đôi khi code lặp được chủ ý để domain khác nhau tiến hóa độc lập.
 
 Refactoring catalog gồm Extract Function/Module, Rename, Inline, Move Function, Replace Conditional with Polymorphism, Introduce Parameter Object và Encapsulate Variable. Chọn thao tác nhỏ có feedback nhanh. Test không cần bao phủ mọi implementation detail nhưng cần bảo vệ contract, edge case và side effect quan trọng. Nếu legacy code chưa có test, characterization test ghi lại behavior hiện tại trước khi đổi.
 

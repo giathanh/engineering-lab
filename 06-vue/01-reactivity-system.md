@@ -35,7 +35,12 @@ watch(query, async (value, _oldValue, onCleanup) => {
 	const controller = new AbortController()
 	onCleanup(() => controller.abort())
 	if (!value.trim()) return
-	await fetch(`/api/search?q=${encodeURIComponent(value)}`, { signal: controller.signal })
+	try {
+		const response = await fetch(`/api/search?q=${encodeURIComponent(value)}`, { signal: controller.signal })
+		if (!response.ok) throw new Error(`Search failed: ${response.status}`)
+	} catch (error) {
+		if (!controller.signal.aborted) console.error('Search failed', error)
+	}
 })
 </script>
 ```
@@ -56,7 +61,7 @@ watch(query, async (value, _oldValue, onCleanup) => {
 - Dùng `reactive()` cho primitive hoặc quên `.value` trong script khi dùng ref.
 - Đặt side effect trong computed getter khiến cache/scheduler semantics khó đoán.
 - Deep-watch toàn bộ store chỉ để theo dõi một field.
-- Tạo watcher trong lifecycle không được dispose hoặc không cleanup external resources.
+- Tạo watcher trong async callback ngoài setup scope mà không tự stop, hoặc quên cleanup external resources. Watcher tạo đồng bộ trong setup thường được Vue tự stop khi unmount.
 - So sánh raw object với proxy bằng identity rồi dùng làm key/Map key không nhất quán.
 - Dùng `watchEffect` async và nghĩ dependencies sau await vẫn được auto-track như synchronous reads.
 

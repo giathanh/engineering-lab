@@ -30,7 +30,8 @@ Architecture diagram should show trust/data boundaries and synchronous vs asynch
 Example design artifact: API contract for a URL shortener must define idempotency, lookup and expiry semantics before choosing cache/database.
 
 ```http
-POST /v1/links
+POST /v1/links HTTP/1.1
+Host: api.example.test
 Idempotency-Key: 6d5f...
 Content-Type: application/json
 
@@ -38,7 +39,7 @@ Content-Type: application/json
 ```
 
 ```http
-201 Created
+HTTP/1.1 201 Created
 Location: https://sho.rt/aB3x
 Content-Type: application/json
 
@@ -56,8 +57,6 @@ Then clarify redirect status, duplicate creation policy, abuse checks, click ana
 - Separate durable source of truth from cache/search/read models; define consistency and rebuild/reconciliation strategy.
 - Include abuse/security (authz, rate limits, input validation, secrets), not only happy-path throughput.
 - Reserve time to summarize decisions, failure modes and open assumptions.
-- Reserve time to summarize decisions, failure modes and open assumptions.
-- Một câu trả lời có cấu trúc thường thể hiện cả steady state và degraded mode: dependency chậm, zone mất, queue tăng, dữ liệu stale. Nêu cách phát hiện (metrics/alerts), cách giới hạn blast radius và điều kiện phục hồi; chỉ thêm component khi nó xử lý failure mode cụ thể.
 - Một câu trả lời có cấu trúc thường thể hiện cả steady state và degraded mode: dependency chậm, zone mất, queue tăng, dữ liệu stale. Nêu cách phát hiện (metrics/alerts), cách giới hạn blast radius và điều kiện phục hồi; chỉ thêm component khi nó xử lý failure mode cụ thể.
 - Quản lý bảng/diagram theo thời gian: dành phần đầu cho context, phần giữa cho flow, cuối cùng cho deep dive có chọn lọc. Nếu interviewer thay traffic hoặc consistency requirement, nói rõ component nào đổi và component nào vẫn giữ nguyên.
 

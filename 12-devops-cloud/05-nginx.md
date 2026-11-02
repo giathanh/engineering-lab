@@ -38,6 +38,8 @@ server {
 	client_max_body_size 10m;
 
 	location / {
+		proxy_http_version 1.1;
+		proxy_set_header Connection "";
 		proxy_set_header Host $host;
 		proxy_set_header X-Forwarded-Proto $scheme;
 		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -57,7 +59,6 @@ Backend phải trust forwarded headers chỉ từ proxy network; production TLS 
 - Chỉ trust forwarded headers từ known proxies; reset/overwrite client-supplied values tại edge.
 - Cache chỉ public/cacheable responses; bypass auth/cookies khi response personalized và include required vary dimensions.
 - Dùng graceful reload, config test (`nginx -t`) trước reload và version-controlled config.
-- Monitor active connections, upstream latency/status, retries, 4xx/5xx, cache hit/miss, temp disk and worker resource use.
 - Monitor active connections, upstream latency/status, retries, 4xx/5xx, cache hit/miss, temp disk and worker resource use.
 - Xác định request ID tại edge và propagate xuyên upstream; không tin ID do client tự cấp nếu dùng để correlate security audit. Access logs có thể gồm query parameters chứa dữ liệu nhạy cảm, nên redact/omit fields và đặt retention theo policy.
 - Nginx retries cần giới hạn attempts, timeout và status codes; retrying non-idempotent methods có thể thực thi side effects hai lần. Với streaming responses, buffering và retry behavior phải được thử trên endpoint thực thay vì áp một config toàn cục.
@@ -122,3 +123,4 @@ Client có thể tự gửi header giả; chỉ proxy đã xác thực nên đư
 - [NGINX: Load Balancing](https://docs.nginx.com/nginx/admin-guide/load-balancer/http-load-balancer/)
 - [NGINX: Proxy Cache](https://docs.nginx.com/nginx/admin-guide/content-cache/content-caching/)
 
+- [Nginx: upstream keepalive](https://nginx.org/en/docs/http/ngx_http_upstream_module.html#keepalive)

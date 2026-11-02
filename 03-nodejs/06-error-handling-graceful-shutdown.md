@@ -90,7 +90,7 @@ Không. Nó bắt rejection được `await` trong try và lỗi đồng bộ tr
 <details>
 <summary><b>Q2. Nên làm gì khi có `uncaughtException`?</b></summary>
 
-Ghi nhận lỗi, thực hiện cleanup đồng bộ tối thiểu nếu cần, đặt exit code và để process thoát; supervisor restart. Không coi process là khỏe mạnh để tiếp tục xử lý traffic.
+Ghi nhận lỗi và cleanup đồng bộ tối thiểu rồi kết thúc process với exit code khác 0; supervisor restart. Nếu đã gắn uncaughtException handler, chỉ đặt process.exitCode không bảo đảm thoát vì server/timer còn có thể giữ event loop sống. Có thể dùng uncaughtExceptionMonitor để quan sát mà giữ hành vi crash mặc định. Không coi process là khỏe mạnh để tiếp tục xử lý traffic.
 
 </details>
 

@@ -35,7 +35,7 @@ final class TaxCalculator
 {
 	public function total(float $subtotal, float $rate): float
 	{
-		if ($subtotal < 0 || $rate < 0) {
+		if (!is_finite($subtotal) || !is_finite($rate) || $subtotal < 0 || $rate < 0) {
 			throw new InvalidArgumentException('Values must be non-negative');
 		}
 		return round($subtotal * (1 + $rate), 2);
@@ -51,6 +51,8 @@ final class TaxCalculatorTest extends TestCase
 	}
 }
 ```
+
+Phép tính float và round ở đây chỉ phục vụ minh họa testing; tính tiền production cần minor units/decimal và rounding policy rõ.
 
 Với Laravel feature test, gọi `$this->postJson('/api/orders', $payload)` rồi assert status/body; fake queue/mail khi chỉ kiểm tra dispatch contract, và giữ integration tests cho worker/DB semantics quan trọng.
 

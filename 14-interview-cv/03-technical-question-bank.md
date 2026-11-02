@@ -18,6 +18,27 @@ Framework trả lời technical question: clarify context/version; define requir
 
 Senior depth thường nằm ở boundaries: DB transaction vs external side effect, cache consistency, Node event loop vs thread pool, React render vs commit, authn vs authz, deployment rollback vs schema. Nếu không nhớ exact API, nói semantics và cách verify thay vì bịa.
 
+### Ma trận câu hỏi theo module
+
+Độ khó dưới đây là gợi ý luyện tập, không phải thang tuyển dụng chuẩn: cơ bản kiểm tra khái niệm, vận dụng yêu cầu giải thích cơ chế, tình huống yêu cầu bảo vệ invariant và xử lý failure.
+
+| Module | Độ khó | Câu hỏi luyện tập | Ý chính cần có trong đáp án |
+|---|---|---|---|
+| 01 Fundamentals | Cơ bản | Append dynamic array có luôn O(1)? | Worst-case resize O(n), amortized O(1) khi capacity tăng theo cấp số nhân. |
+| 02 PHP | Vận dụng | Vì sao singleton đúng ở FPM vẫn có thể lỗi ở Octane? | Userland request state được reset ở FPM, long-running app có thể giữ state qua request; chọn lifetime và cleanup đúng. |
+| 03 Node.js | Vận dụng | Promise có đưa CPU loop ra khỏi main thread? | Không; phân biệt microtasks, libuv pool và worker_threads. |
+| 04 JS/TS | Vận dụng | as User có validate JSON không? | Không; parse unknown bằng runtime validation rồi mới dùng typed value. |
+| 05 React | Vận dụng | Render lại có nghĩa DOM đổi? | Không; phân biệt render, reconciliation, commit và browser paint. |
+| 06 Vue | Vận dụng | Observer tạo trong onMounted có thấy node v-if xuất hiện sau không? | Không tự động; theo dõi template ref hoặc tạo sau DOM update, cleanup đúng. |
+| 07 Database | Tình huống | Hai request cùng mua sản phẩm cuối cùng, xử lý thế nào? | Conditional UPDATE, kiểm affected rows, transaction với related writes và idempotency; test concurrency. |
+| 08 API | Tình huống | Timeout khi charge payment có nên retry? | Outcome unknown; provider idempotency, query status/reconciliation, deadline và giới hạn retry. |
+| 09 System Design | Tình huống | DB commit nhưng broker publish thất bại thì sao? | Transactional outbox và relay; redelivery vẫn cần consumer dedupe cùng side effect. |
+| 10 Security | Tình huống | UUID và route guard có ngăn IDOR? | Không; server authorize principal–resource–action và tenant cho từng access path. |
+| 11 Testing | Vận dụng | Suite mock ORM toàn bộ bỏ sót lỗi gì? | SQL/schema/transaction/locking và driver behavior; bổ sung integration test đúng engine. |
+| 12 DevOps | Tình huống | Rollback image sau đổi schema có an toàn? | Chỉ khi schema tương thích; dùng expand-contract, kiểm dữ liệu và kế hoạch roll-forward. |
+| 13 Leadership | Tình huống | Dependency gây trễ, báo PO thế nào? | Evidence, assumptions, impact, options và forecast mới; giữ tiêu chuẩn an toàn/chất lượng. |
+| 14 Interview/CV | Vận dụng | Không có metric chính xác thì viết CV ra sao? | Dùng outcome/scope hoặc proxy có thể kiểm chứng, phân biệt đóng góp cá nhân/team, không bịa số. |
+
 ## 3. Code ví dụ
 
 Answer outline cho database transaction question.
@@ -39,7 +60,6 @@ Validation: concurrent integration test on production DB engine; monitor conflic
 - Dùng project stories để chứng minh theory và ownership; giữ customer/company data confidential.
 - Khi interviewer challenge, coi đó là thêm constraint; cập nhật reasoning thay defend answer cũ.
 - Không chỉ nêu best practice; giải thích when not to use, failure path và measurement.
-- Maintain spaced repetition list cho weak topics; revisit bằng recall, code/diagram, không đọc lại thụ động.
 - Maintain spaced repetition list cho weak topics; revisit bằng recall, code/diagram, không đọc lại thụ động.
 - Với mỗi chủ đề, chuẩn bị một câu trả lời 30 giây, một deep dive 3 phút và một production example; interviewer có thể chọn bất kỳ độ sâu nào. Ghi rõ caveats theo engine/version và link official docs để refresh những chi tiết thay đổi nhanh.
 
@@ -104,10 +124,10 @@ Profile/tracing cùng workload và SLO; tách CPU, DB, network, queueing, memory
 
 </details>
 
-## 7. Ứng dụng vào CV
+## 7. Áp dụng thực tế
 
-- Xây interview portfolio với **[N]** technical stories/diagrams có trade-offs và measured outcomes, tăng onsite pass rate **[A]%**.
-- Luyện retrieval-based technical reviews theo weak-topic matrix, giảm time-to-solution **[A]%** trong mock interviews.
+- Với mỗi module, tự trả lời một câu trong ma trận mà không nhìn ghi chú; ghi lại assumption sai, ví dụ chưa giải thích được và tài liệu cần đọc lại.
+- Chuyển câu trả lời thành bằng chứng dự án thật nếu đã có kinh nghiệm tương ứng. Bài mock chỉ là hoạt động luyện tập, không thay kinh nghiệm production.
 
 ## 8. Tài liệu tham khảo
 

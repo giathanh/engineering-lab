@@ -16,9 +16,9 @@ Session flow: server tạo opaque random session ID, lưu session state phía se
 
 JWT gồm header/payload/signature, thường JWS; payload base64url encoded, không encrypted. Verify signature bằng allowlisted algorithm/key, `iss`, `aud`, `exp`, `nbf` và token purpose. Access tokens ngắn hạn giảm exposure; revocation cần denylist/introspection/short TTL. Key rotation cần `kid` resolution an toàn, không tin key URL từ token tùy tiện.
 
-OAuth2 flow cấp access token để client gọi resource server; OIDC thêm ID token về authentication claims, issuer/audience/nonce validation. Authorization Code + PKCE bảo vệ code exchange cho public clients; `state` chống CSRF/login mix-up và `nonce` ràng buộc OIDC response. SSO thường dựa OIDC/SAML IdP, không phải tự phát hành một JWT dùng mọi nơi.
+OAuth2 flow cấp access token để client gọi resource server; OIDC thêm ID token về authentication claims, issuer/audience/nonce validation. Authorization Code + PKCE bảo vệ code exchange cho public clients; `state` ràng buộc request/response để chống CSRF; chống authorization-server mix-up còn cần kiểm tra issuer và ràng buộc đúng authorization server/redirect URI. `nonce` ràng buộc OIDC ID token với login request. SSO thường dựa OIDC/SAML IdP, không phải tự phát hành một JWT dùng mọi nơi.
 
-Refresh token sống lâu hơn, chỉ gửi tới authorization server, lưu an toàn, rotate mỗi lần dùng. Nếu token cũ được reuse, revoke token family/session. Authorization cần object-level checks (tenant/ownership), role/scope chỉ là một phần policy. Client UI hiding không phải access control.
+Refresh token thường sống lâu hơn access token, chỉ gửi tới authorization server và cần lưu an toàn. Với public client, RFC 9700 yêu cầu rotation hoặc sender-constraining để phát hiện replay; dưới đây mô tả phương án rotation. Nếu token cũ được reuse, revoke token family/session. Authorization cần object-level checks (tenant/ownership), role/scope chỉ là một phần policy. Client UI hiding không phải access control.
 
 ## 3. Code ví dụ
 
@@ -29,10 +29,14 @@ import { jwtVerify } from 'jose';
 
 const secretValue = process.env.JWT_SECRET;
 if (!secretValue) throw new Error('JWT_SECRET is required');
+const token = process.env.JWT_TOKEN; // In an API, read the bearer token from the request.
+if (!token) throw new Error('JWT_TOKEN is required');
 
 const key = new TextEncoder().encode(secretValue);
+if (key.byteLength < 32) throw new Error('HS256 requires at least 32 random key bytes');
 const { payload } = await jwtVerify(token, key, {
 	algorithms: ['HS256'],
+	requiredClaims: ['exp', 'sub'],
 	issuer: 'https://auth.example.test',
 	audience: 'orders-api',
 });
@@ -40,7 +44,7 @@ const { payload } = await jwtVerify(token, key, {
 if (typeof payload.sub !== 'string') throw new Error('Invalid subject');
 ```
 
-Trong production ưu tiên asymmetric signing khi nhiều resource servers chỉ cần verify; validate scopes/tenant/authorization riêng sau token verification. Secret/key rotation và error responses cần policy.
+Trong production ưu tiên asymmetric signing khi nhiều resource servers chỉ cần verify; validate scopes/tenant/authorization riêng sau token verification. HS256 key phải được sinh ngẫu nhiên bằng CSPRNG với ít nhất 256 bit entropy; kiểm tra độ dài không chứng minh entropy. Secret/key rotation và error responses cần policy. `exp` phải được yêu cầu rõ vì verifier thường chỉ kiểm tra expiry nếu claim có mặt.
 
 ## 4. Trade-off & Best practices
 
@@ -110,3 +114,7 @@ Browser tự gửi cookie nên CSRF protection cần thiết; bearer token do JS
 - [OpenID Connect Core](https://openid.net/specs/openid-connect-core-1_0.html)
 - [OWASP: Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html)
 - [jose: JavaScript JOSE library](https://github.com/panva/jose)
+
+- [RFC 9700: OAuth 2.0 Security BCP](https://www.rfc-editor.org/rfc/rfc9700.html)
+
+- [jose: JWTVerifyOptions](https://github.com/panva/jose/blob/main/docs/jwt/verify/interfaces/JWTVerifyOptions.md)

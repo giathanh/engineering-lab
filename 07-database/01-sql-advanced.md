@@ -40,10 +40,11 @@ WITH ranked_orders AS (
 )
 SELECT customer_id, id, total, created_at
 FROM ranked_orders
-WHERE position <= 3;
+WHERE position <= 3
+ORDER BY customer_id, created_at DESC, id DESC;
 ```
 
-Tie-breaker `id` làm ordering deterministic. Nếu cần giữ mọi đồng hạng tại vị trí 3, dùng `RANK`/`DENSE_RANK` và định nghĩa tie semantics.
+Tie-breaker `id` làm ordering deterministic. Nếu cần đồng hạng theo created_at, bỏ id khỏi ORDER BY bên trong window, rồi chọn RANK (hạng có khoảng trống) hoặc DENSE_RANK (ba mức timestamp khác nhau). Giữ id trong window sẽ khiến mọi row có hạng riêng nếu id unique; outer ORDER BY vẫn có thể dùng id để output ổn định.
 
 ## 4. Trade-off & Best practices
 
@@ -114,3 +115,4 @@ Nếu subquery chứa NULL, so sánh tạo UNKNOWN theo three-valued logic và W
 - [MySQL: Window Functions](https://dev.mysql.com/doc/refman/8.4/en/window-functions.html)
 - [Use The Index, Luke: SQL](https://use-the-index-luke.com/sql)
 
+- [PostgreSQL: Window Functions và peer groups](https://www.postgresql.org/docs/current/functions-window.html)

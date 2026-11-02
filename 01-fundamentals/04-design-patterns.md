@@ -35,7 +35,9 @@ const deliveryStrategies = {
 
 export function calculateDeliveryFee(weightKg, service) {
 	if (!Number.isFinite(weightKg) || weightKg < 0) throw new RangeError('Invalid weight');
-	const strategy = deliveryStrategies[service];
+	const strategy = Object.hasOwn(deliveryStrategies, service)
+		? deliveryStrategies[service]
+		: undefined;
 	if (!strategy) throw new RangeError(`Unsupported service: ${service}`);
 	return strategy(weightKg);
 }
@@ -97,7 +99,7 @@ Không. Dùng khi boundary persistence/domain đáng giá hoặc cần thay/ki�
 <details>
 <summary><b>Q5. Decorator có thứ tự quan trọng không?</b></summary>
 
-Có. Retry ngoài logging có thể log từng attempt hoặc toàn operation khác nhau; cache ngoài authorization có thể làm lộ dữ liệu nếu key/scope sai. Thứ tự là một phần semantics.
+Có. Logging nằm trong retry sẽ ghi từng attempt; logging nằm ngoài retry thường chỉ bao quanh toàn operation; cache ngoài authorization có thể làm lộ dữ liệu nếu key/scope sai. Thứ tự là một phần semantics.
 
 </details>
 

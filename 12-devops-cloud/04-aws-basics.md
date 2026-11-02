@@ -14,7 +14,7 @@
 
 Region là geographic area; AZ là fault-isolated location trong region. Multi-AZ giảm single-AZ outage risk nhưng không thay backup/PITR; multi-region cần replication/failover/data residency design. EC2 cho OS/runtime control và persistent workloads, đổi lại patching/instance lifecycle. Auto Scaling Groups replace unhealthy capacity; load balancer routes traffic.
 
-S3 lưu objects trong buckets, có versioning, lifecycle, encryption, access policies và event notifications; không phải POSIX filesystem semantics mặc định. Public access block, bucket policies/IAM và presigned URLs cần scope kỹ. RDS quản lý engine/backups/patching options nhưng schema/query/index/credentials vẫn thuộc app team. Multi-AZ availability khác read replica scaling; replica lag/region behavior cần hiểu.
+S3 lưu objects trong buckets, có versioning, lifecycle, encryption, access policies và event notifications; không phải POSIX filesystem semantics mặc định. Public access block, bucket policies/IAM và presigned URLs cần scope kỹ. RDS quản lý engine/backups/patching options nhưng schema/query/index/credentials vẫn thuộc app team. Phân biệt Multi-AZ DB instance (một standby không phục vụ reads) với Multi-AZ DB cluster (hai reader có thể phục vụ reads và failover). Read replica là cấu hình khác; replication lag/engine behavior cần hiểu.
 
 Lambda chạy function theo events với concurrency quotas, cold starts, execution/time/memory limits và integration retries. Idempotency quan trọng vì event delivery có thể duplicate. SQS Standard queue hướng at-least-once/best effort ordering; FIFO thêm ordering/dedup constraints. CloudFront edge cache giảm latency/origin load, nhưng cache key/headers/cookies invalidation cần thiết kế để tránh private data leakage.
 
@@ -47,14 +47,13 @@ Server phải authorize tenant/key, giới hạn content type/size qua policy/PO
 - Lambda concurrency/reserved limits, timeout, idempotency, DLQ/destinations và payload size limits.
 - CloudFront cache public assets/content; define cache key, origin access control, invalidation and private response behavior.
 - Tag resources, budgets/cost alerts, rightsize, review data transfer/log retention and unused resources.
-- Tag resources, budgets/cost alerts, rightsize, review data transfer/log retention and unused resources.
 - Với cross-account access, dùng role assumption và external ID/conditions phù hợp thay chia access keys. Tách dev/staging/prod accounts hạn chế blast radius; CloudTrail organization trails và config drift detection giúp điều tra thay đổi ngoài pipeline.
 
 ## 5. Lỗi thường gặp / Pitfalls
 
 - Dùng access keys lâu dài trong source/.env/CI thay role federation.
 - Public S3 bucket/ACL rộng hoặc presigned URL TTL quá dài.
-- Nhầm Multi-AZ standby với read scaling/backup.
+- Nhầm standby của Multi-AZ DB instance với read replica, hoặc nghĩ Multi-AZ thay được backup. Multi-AZ DB cluster có reader phục vụ reads.
 - Lambda retries duplicate side effects mà không idempotency; concurrency overwhelm DB.
 - CloudFront cache key bỏ tenant/cookie dimension hoặc cache private response công khai.
 - Không test restore/region failover vì “managed service đã backup”.
@@ -65,7 +64,7 @@ Server phải authorize tenant/key, giới hạn content type/size qua policy/PO
 <details>
 <summary><b>Q1. Multi-AZ khác read replica?</b></summary>
 
-Multi-AZ chủ yếu tăng availability/failover theo engine/service; read replica phục vụ read scaling/analytics với replication lag. Exact architecture phụ thuộc RDS engine/config.
+Multi-AZ DB instance có standby chỉ cho failover; Multi-AZ DB cluster có hai reader vừa phục vụ reads vừa hỗ trợ failover. Read replica riêng dùng cho read scaling/analytics theo engine/topology. Cả hai không thay backup/PITR.
 
 </details>
 
@@ -108,3 +107,5 @@ RTO là thời gian phục hồi mục tiêu; RPO là lượng dữ liệu mất
 - [AWS IAM Best Practices](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html)
 - [Amazon S3 Documentation](https://docs.aws.amazon.com/s3/)
 - [Amazon SQS Documentation](https://docs.aws.amazon.com/sqs/)
+
+- [AWS RDS: Multi-AZ instance và cluster](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html)

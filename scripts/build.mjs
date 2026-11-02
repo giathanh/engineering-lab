@@ -201,7 +201,7 @@ function indexPage(modules, priority, total, filled) {
 <section class="hero">
   <h1>${SITE_TITLE}</h1>
   <p class="sub">${SITE_SUBTITLE}</p>
-  <p>Kiến thức cần và đủ của một Senior Developer để đi phỏng vấn và cập nhật CV.</p>
+  <p>Tài liệu ôn tập phỏng vấn Senior Fullstack và chuẩn bị CV theo role, stack và kinh nghiệm.</p>
   <div class="stats">
     <div><b>${modules.length}</b><span>module</span></div>
     <div><b>${total}</b><span>bài</span></div>

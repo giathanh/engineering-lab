@@ -40,7 +40,6 @@ Process: What are the remaining interview steps and decision timeline?
 - Chuyển từ salary history sang scope/value/current market khi được hỏi; không cần cung cấp thông tin pháp lý nhạy cảm ngoài yêu cầu hợp lệ.
 - Thương lượng sau khi hiểu written offer; cụ thể, respectful, một lần đủ rõ, cho employer thời gian phản hồi.
 - Nếu offer không phù hợp, decline chuyên nghiệp; giữ relationship và không accept trong lúc chưa sẵn sàng.
-- Nếu offer không phù hợp, decline chuyên nghiệp; giữ relationship và không accept trong lúc chưa sẵn sàng.
 - Khi đưa counteroffer, nêu một primary ask và rationale ngắn; nếu package có nhiều thành phần, xếp priority trước để tránh thương lượng từng phần rời rạc. Confirm acceptance conditions, start date, contingencies and any verbal commitments in the final written offer.
 
 ## 5. Lỗi thường gặp / Pitfalls
@@ -90,10 +89,10 @@ Nêu enthusiasm, evidence/market rationale và specific request; nếu base fixe
 
 </details>
 
-## 7. Ứng dụng vào CV
+## 7. Áp dụng thực tế
 
-- Chuẩn bị impact evidence cho **[N]** negotiation topics, đạt total compensation **[A]%** phù hợp market/role scope.
-- Xác định role success/on-call/decision boundaries trước offer, giảm mismatch-driven attrition risk trong **[B] tháng**.
+- Chuẩn bị 3–5 câu hỏi về scope, tiêu chí thành công, on-call và quyền quyết định; ghi lại câu trả lời để so sánh roles.
+- Lập bảng package với kỳ tính, tiền tệ, gross/net, khoản bảo đảm/biến động và điều kiện vesting; salary negotiation là việc cá nhân, không phải bullet thành tích kỹ thuật trên CV.
 
 ## 8. Tài liệu tham khảo
 

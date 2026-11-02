@@ -46,8 +46,6 @@ Test cần setup cart/payment sandbox và cleanup; không phụ thuộc real ext
 - Dùng test retries để thu trace/flaky diagnostics, không coi retry pass là test healthy.
 - CI chia shards, cache browser binaries, upload traces/screenshots khi failure và giữ test duration visible.
 - Chạy browser/device matrix dựa support matrix; test accessibility/keyboard song song với happy paths.
-- Chạy browser/device matrix dựa support matrix; test accessibility/keyboard song song với happy paths.
-- Phân biệt product defect với environment failure qua trace, console, request logs và browser version; CI images nên được version/pinned. Khi test flake chỉ xảy ra dưới parallel load, kiểm tra shared accounts, rate limits và test data cleanup trước khi tăng timeout.
 - Phân biệt product defect với environment failure qua trace, console, request logs và browser version; CI images nên được version/pinned. Khi test flake chỉ xảy ra dưới parallel load, kiểm tra shared accounts, rate limits và test data cleanup trước khi tăng timeout.
 - Artifact của failed run cần giữ trace/video vừa đủ để tái hiện nhưng redact credentials và user data. Quarantine một test chỉ là biện pháp ngắn hạn: gắn owner, issue và ngày gỡ quarantine để flaky test không biến thành suite mặc định bị bỏ qua.
 

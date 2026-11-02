@@ -4,13 +4,15 @@
 
 ## 1. Tóm tắt nhanh (TL;DR)
 
-- Hooks gắn state/effects vào component identity theo thứ tự gọi; chỉ gọi top-level trong function component/custom hook.
+- Hooks gắn state/effects vào component identity theo thứ tự gọi; chỉ gọi top-level trong function component/custom hook, trừ API use của React 19 như giải thích bên dưới.
 - State là snapshot theo render; updater function dùng khi giá trị mới phụ thuộc giá trị trước hoặc có nhiều queued updates.
 - `useEffect` đồng bộ với hệ thống bên ngoài sau commit; derived state/render calculation thường không cần effect.
 - `useRef` giữ mutable value không trigger render; `useMemo`/`useCallback` là optimization, không phải semantic guarantee.
 - Custom hook chia sẻ logic, không chia sẻ state instance trừ khi dùng external store/context.
 
 ## 2. Khái niệm cốt lõi
+
+Ngoại lệ React 19: API `use` có thể gọi trong condition/loop, nhưng vẫn phải ở component/custom hook và không bọc trong try/catch. Quy tắc thứ tự dưới đây áp dụng cho hooks như useState/useEffect.
 
 React associate hook state với component Fiber theo thứ tự hook calls. Nếu gọi trong condition/loop, vị trí hook lệch giữa render và React không thể map state đúng. Custom hooks tuân cùng rules và giúp gom stateful logic theo concern.
 
@@ -22,29 +24,29 @@ Effects chạy sau commit để đồng bộ với external systems như subscri
 
 ## 3. Code ví dụ
 
-Effect subscribe external event source, cleanup subscription và tránh stale closure bằng dependency đầy đủ.
+Subscribe browser status bằng `useSyncExternalStore`, có cleanup và server snapshot nhất quán khi SSR/hydration.
 
 ```jsx
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
+
+function subscribe(onChange) {
+	window.addEventListener('online', onChange);
+	window.addEventListener('offline', onChange);
+	return () => {
+		window.removeEventListener('online', onChange);
+		window.removeEventListener('offline', onChange);
+	};
+}
+
+const getSnapshot = () => navigator.onLine;
+const getServerSnapshot = () => true;
 
 function useOnlineStatus() {
-	const [online, setOnline] = useState(navigator.onLine);
-
-	useEffect(() => {
-		const update = () => setOnline(navigator.onLine);
-		window.addEventListener('online', update);
-		window.addEventListener('offline', update);
-		return () => {
-			window.removeEventListener('online', update);
-			window.removeEventListener('offline', update);
-		};
-	}, []);
-
-	return online;
+	return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
 ```
 
-Trong SSR, truy cập `navigator` trong initial render có thể lỗi; production hook cần khởi tạo trạng thái an toàn theo environment hoặc dùng external-store API phù hợp hydration.
+Server và lần hydration đầu dùng snapshot `true`; sau đó React đọc trạng thái browser thật. `navigator.onLine` chỉ là tín hiệu network của browser, không chứng minh backend truy cập được.
 
 ## 4. Trade-off & Best practices
 
@@ -71,7 +73,7 @@ Trong SSR, truy cập `navigator` trong initial render có thể lỗi; producti
 <details>
 <summary><b>Q1. Vì sao Rules of Hooks quan trọng?</b></summary>
 
-React map hook state theo thứ tự gọi trong component identity. Conditional/loop calls làm thứ tự thay đổi và state slot bị gán sai.
+React map hook state theo thứ tự gọi trong component identity. Conditional/loop calls của useState/useEffect làm thứ tự thay đổi và state slot bị gán sai; riêng API use của React 19 cho phép condition/loop.
 
 </details>
 
@@ -114,3 +116,6 @@ Không. Đây là performance optimization; React có thể discard cache. Corre
 - [React: Synchronizing with Effects](https://react.dev/learn/synchronizing-with-effects)
 - [React: State as a Snapshot](https://react.dev/learn/state-as-a-snapshot)
 - [React: `useEffectEvent`](https://react.dev/reference/react/useEffectEvent)
+
+- [React: useSyncExternalStore](https://react.dev/reference/react/useSyncExternalStore)
+- [React: use — ngoại lệ với condition/loop](https://react.dev/reference/react/use)

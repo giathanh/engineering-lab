@@ -12,7 +12,7 @@
 
 ## 2. Khái niệm cốt lõi
 
-Composer đọc `composer.json`, giải constraint thành dependency graph và lưu kết quả cụ thể vào `composer.lock`. Ứng dụng thường commit cả hai file; library thường commit `composer.json` và để consumer resolve lock riêng. `composer install` cài đúng lock đã khóa nếu có; `composer update` chạy solver lại trong khoảng constraint, nên nên update có chủ đích và review diff. `composer.lock` của root project không được dùng như lock bắt buộc cho consumer library.
+Composer đọc `composer.json`, giải constraint thành dependency graph và lưu kết quả cụ thể vào `composer.lock`. Ứng dụng thường commit cả hai file; library có thể commit lockfile để tái lập môi trường phát triển/test; lockfile đó không khóa dependency của consumer. `composer install` cài đúng lock đã khóa nếu có; `composer update` chạy solver lại trong khoảng constraint, nên nên update có chủ đích và review diff. `composer.lock` của root project không được dùng như lock bắt buộc cho consumer library.
 
 Autoload PSR-4 ánh xạ namespace prefix, ví dụ `App\\` tới `src/`. Khi class `App\\Domain\\Order` được yêu cầu, loader đổi phần namespace còn lại thành path tương ứng. Prefix cần có trailing namespace separator để tránh match nhầm; nhiều path cho một prefix có thể được cấu hình nhưng cần nhất quán. Composer có thể generate autoloader optimized (`-o`) thành classmap; authoritative classmap nhanh hơn nhưng class mới tạo runtime/dynamic không có trong map sẽ không được resolve.
 
@@ -31,6 +31,21 @@ Cấu hình package tối giản và cách chạy autoload. Đặt class `App\Se
 
 ```php
 <?php
+// src/Service/Greeter.php
+namespace App\Service;
+
+final class Greeter
+{
+	public function greet(string $name): string
+	{
+		return 'Hello, ' . $name;
+	}
+}
+```
+
+```php
+<?php
+// example.php (project root)
 require __DIR__ . '/vendor/autoload.php';
 
 $greeter = new App\Service\Greeter();
@@ -43,7 +58,7 @@ Trong project thực tế, `composer validate --strict` kiểm tra metadata, `co
 
 - Pin PHP/platform requirement trong `config.platform` khi cần giải dependency tương thích production; vẫn phải chạy test trên PHP runtime thực tế.
 - Giữ constraint đủ rộng để consumer giải dependency nhưng có policy update và CI matrix; app nên dựa lockfile để reproducibility.
-- Phân biệt package library và application: library thường không commit lock; application nên commit lock.
+- Phân biệt package library và application: application nên commit lock; library có thể commit để tái lập dev/test, đồng thời cần CI kiểm tra các dải dependency được hỗ trợ.
 - Chạy `composer install --no-dev --classmap-authoritative` hoặc `-o` phù hợp deployment và autoload model; authoritative không hợp dynamic class generation nếu chưa map.
 - Giữ package scripts deterministic; tránh script install chạy code tùy ý trong môi trường có secret/quyền cao.
 - Dùng PSR để giảm coupling ở boundaries; không cần ép mọi class nội bộ phải implement PSR nếu contract không mang lợi ích.
@@ -76,16 +91,16 @@ Namespace prefix được map tới thư mục; phần namespace còn lại tr�
 </details>
 
 <details>
-<summary><b>Q3. Vì sao app commit lockfile nhưng library thường không?</b></summary>
+<summary><b>Q3. Lockfile của library có khóa dependency của consumer không?</b></summary>
 
-Application cần cài tái lập một dependency graph cụ thể. Library cần để mỗi consumer giải graph phù hợp với dependency khác của họ; lockfile library không điều khiển graph của consumer.
+Không. Application dùng lockfile của root project để cài tái lập. Library có thể commit lock cho dev/test của chính nó, nhưng khi được cài như dependency thì Composer dùng constraints trong composer.json của library, không dùng lock của library.
 
 </details>
 
 <details>
 <summary><b>Q4. PSR-7 message immutable có ý nghĩa gì?</b></summary>
 
-Method như `withHeader()` trả message mới thay vì mutate instance; caller phải giữ return value. Điều này giúp middleware composition dễ dự đoán.
+Method như `withHeader()` trả message mới thay vì mutate instance; caller phải giữ return value. Điều này giúp middleware composition dễ dự đoán. Body `StreamInterface` có thể mutable và được chia sẻ giữa các message; PSR-7 không bảo đảm deep immutability của stream.
 
 </details>
 
@@ -116,3 +131,4 @@ Không tuyệt đối. Constraint thể hiện policy tương thích kỳ vọng
 - [PSR-15: HTTP Server Request Handlers](https://www.php-fig.org/psr/psr-15/)
 - [PHP-FIG: PSR-12](https://www.php-fig.org/psr/psr-12/)
 
+- [Composer: library lock file](https://getcomposer.org/doc/02-libraries.md#lock-file)

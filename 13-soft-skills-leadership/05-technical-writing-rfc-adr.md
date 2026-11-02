@@ -8,7 +8,7 @@
 - RFC mở discussion cho proposal/alternatives; ADR ghi một architectural decision đã chọn cùng context/consequences.
 - Audience, decision needed, status, owner và expiry/revisit trigger cần rõ ngay đầu tài liệu.
 - Viết theo problem/evidence/options/trade-offs/recommendation, không biến doc thành dump implementation details.
-- Tài liệu cần versioning, review, discoverability và lifecycle; stale docs tệ hơn không có docs.
+- Tài liệu cần versioning, review, discoverability và lifecycle; stale docs có thể dẫn tới quyết định hoặc thao tác sai; cần đánh dấu trạng thái và owner cập nhật.
 
 ## 2. Khái niệm cốt lõi
 
@@ -48,8 +48,6 @@ We accept provider coupling and must test key rotation and expiry behavior.
 - Keep docs close to code/schema when possible; assign owner/review date cho long-lived operational docs.
 - Dùng diagrams cho interactions/data flow, text/table cho constraints/options; cung cấp accessible source.
 - Khi decision đổi, create superseding record and update indexes/links.
-- Khi decision đổi, create superseding record and update indexes/links.
-- Với RFC dài, dùng staged review: trước tiên xác nhận problem/constraints, sau đó review options, cuối cùng chốt rollout details. Cách này phát hiện bất đồng về mục tiêu trước khi team tranh luận implementation; unresolved questions được gắn owner/date thay vì biến thành prose không kết luận.
 - Với RFC dài, dùng staged review: trước tiên xác nhận problem/constraints, sau đó review options, cuối cùng chốt rollout details. Cách này phát hiện bất đồng về mục tiêu trước khi team tranh luận implementation; unresolved questions được gắn owner/date thay vì biến thành prose không kết luận.
 - Viết câu chủ động, định nghĩa acronyms lần đầu và tách normative requirements khỏi examples. Một diagram nên có owner/source và mô tả failure paths; nếu không, người đọc dễ coi happy-path drawing là guarantee. User test docs bằng người ngoài team giúp phát hiện jargon hoặc missing setup context.
 

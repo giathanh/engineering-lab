@@ -45,7 +45,6 @@ Owner: Activity team
 - Delegate outcomes với boundaries và coaching availability; để người nhận sở hữu solution design.
 - Escalate khi risk vượt authority/time budget, đưa options và recommendation thay chỉ nêu vấn đề.
 - Đo sau ship: SLO, adoption, support tickets, cost, rollback rate; cập nhật quyết định khi evidence đổi.
-- Đo sau ship: SLO, adoption, support tickets, cost, rollback rate; cập nhật quyết định khi evidence đổi.
 - Khi nhiều teams cần cùng decision, đặt decision owner và deadline review rõ ràng để consultation không biến thành veto-by-silence. Sau khi quyết định, chia nhỏ rollout và chia sẻ rationale để các team phụ thuộc có thể tự đưa ra decisions nhất quán.
 
 ## 5. Lỗi thường gặp / Pitfalls

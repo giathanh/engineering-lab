@@ -31,7 +31,7 @@ Thread pool dùng chung trong process. Một tác vụ nặng có thể làm cá
 
 ## 3. Code ví dụ
 
-Ví dụ này so sánh một callback đồng bộ nặng với công việc async. Phần loop cố ý minh họa lỗi; bỏ comment để thấy event loop bị giữ lại.
+Ví dụ chạy PBKDF2 bằng API async sử dụng libuv pool. Nó không chứa CPU loop so sánh và không phải mẫu lưu password: salt cố định chỉ dùng để minh họa scheduling.
 
 ```js
 import { pbkdf2 } from 'node:crypto';

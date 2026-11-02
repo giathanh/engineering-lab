@@ -25,6 +25,8 @@ REST resource endpoints, HTTP caching/CDN và operational simplicity thường t
 Resolver dùng DataLoader để batch author lookup; minh họa generic GraphQL server contract.
 
 ```js
+import DataLoader from 'dataloader';
+
 const resolvers = {
 	Post: {
 		author: (post, _args, { loaders }) => loaders.authorById.load(post.authorId),

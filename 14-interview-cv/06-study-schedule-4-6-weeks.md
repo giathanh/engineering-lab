@@ -35,7 +35,6 @@ Tracking: topic, task, result, mistake pattern, next review date
 - Mock interviews tăng dần fidelity: solo timer, peer mock, unfamiliar prompt, full loop.
 - Duy trì sleep, exercise, meals and rest; schedule recovery as part of performance.
 - Nếu lịch trễ, giảm scope high-value topics, không đẩy mọi việc sang tuần cuối.
-- Nếu lịch trễ, giảm scope high-value topics, không đẩy mọi việc sang tuần cuối.
 - Lịch 6 tuần có thể thêm một ngày buffer sau mỗi tuần cho work/life interruptions; dùng buffer để sửa gap có bằng chứng từ mock, không nhồi topic mới. Mỗi tuần giữ một session review goals và chọn ba ưu tiên kế tiếp để kế hoạch linh hoạt mà vẫn có direction.
 
 Lịch 4 tuần mẫu theo ngày (mỗi block 60–120 phút; ngày 7 nghỉ):
@@ -96,10 +95,10 @@ Mock loops, review weak spots/CV stories, logistics, sleep and concise refresh; 
 
 </details>
 
-## 7. Ứng dụng vào CV
+## 7. Áp dụng thực tế
 
-- Hoàn tất **[N]** targeted mocks và close **[A]** top skill gaps trong **[B] tuần**, nâng mock performance từ **[C] lên [D]**.
-- Xây portfolio/story bank có evidence cho **[N]** competencies, tăng interview readiness theo peer rubric **[A]%**.
+- Theo dõi topic, bài luyện, kết quả, lỗi lặp lại và ngày recall tiếp theo; điều chỉnh ưu tiên bằng feedback thay vì số giờ đã học.
+- Dùng lịch để chuẩn bị interview; chỉ đưa project/kinh nghiệm có thể chứng minh lên CV, không biến mock score hay “interview readiness” thành kết quả công việc.
 
 ## 8. Tài liệu tham khảo
 

@@ -12,7 +12,7 @@
 
 ## 2. Khái niệm cốt lõi
 
-`strict: true` bật nhóm checks như `strictNullChecks`, `noImplicitAny`, strict function types và strict property initialization. Một số checks riêng cần cấu hình rõ. `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`, `useUnknownInCatchVariables` tăng safety nhưng có migration cost. Compiler flags nên là project contract, không copy ngẫu nhiên từ config khác.
+`strict: true` bật nhóm checks như `strictNullChecks`, `noImplicitAny`, strict function types và strict property initialization. Một số checks riêng cần cấu hình rõ. `useUnknownInCatchVariables` được bật theo `strict` từ TypeScript 4.4 (trừ khi override). `exactOptionalPropertyTypes` và `noUncheckedIndexedAccess` phải bật riêng, không nằm trong `strict`. Các check này có migration cost. Compiler flags nên là project contract, không copy ngẫu nhiên từ config khác.
 
 Conditional types phân nhánh theo assignability; `infer` bind một type variable ở pattern. Ví dụ `type Element<T> = T extends readonly (infer U)[] ? U : never`. Distributive conditional types xảy ra khi naked type parameter bên trái `extends` gặp union; bọc `[T]` để tránh distribution khi cần kiểm tra union nguyên khối. Mapped types transform keys/modifiers; template literal types tạo string unions nhưng có thể làm compiler workload tăng.
 
@@ -113,3 +113,4 @@ Giảm thời gian typecheck bằng bỏ qua kiểm tra declaration dependencies
 - [TypeScript: Module Resolution](https://www.typescriptlang.org/docs/handbook/modules/reference.html)
 - [TypeScript: Conditional Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html)
 
+- [TypeScript: useUnknownInCatchVariables](https://www.typescriptlang.org/tsconfig/useUnknownInCatchVariables.html)

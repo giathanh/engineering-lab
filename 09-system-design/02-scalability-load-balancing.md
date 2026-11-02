@@ -20,7 +20,7 @@ Stateless không có nghĩa không có state; nó có nghĩa instance không ph�
 
 ## 3. Code ví dụ
 
-Nginx upstream round-robin cơ bản; production cần health checks/TLS/timeout phù hợp platform/version.
+Nginx upstream dùng least-connections cơ bản (do có least_conn); production cần health checks/TLS/timeout phù hợp platform/version.
 
 ```nginx
 upstream app_servers {
@@ -49,7 +49,6 @@ Timeouts cần phối hợp end-to-end deadline và proxy buffering; retry unsaf
 - Autoscale theo leading indicator (queue depth/requests) cùng CPU/memory, có cooldown và max capacity để tránh oscillation.
 - Test instance loss, zone loss, noisy dependency và rolling deploy; đảm bảo remaining capacity đủ degraded SLO.
 - Tránh sticky sessions trừ khi cần, và có session recovery/failover.
-- Load test từ edge đến DB/cache, tính connection multiplication và retry amplification.
 - Load test từ edge đến DB/cache, tính connection multiplication và retry amplification.
 - Capacity planning tính cả deploy/maintenance: rolling rollout có thể chạy old/new versions song song, còn failover làm traffic dồn vào phần capacity còn lại. Xác định graceful degradation (ví dụ tắt analytics trước checkout) và test với traffic mix tương tự production.
 

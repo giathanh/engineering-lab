@@ -48,6 +48,8 @@ test('rejects invalid subtotal', () => {
 });
 ```
 
+Phép tính number/Math.round ở đây là ví dụ test đơn giản, không phải money model production; với tiền cần minor units/decimal và rounding policy.
+
 HTTP integration có thể dùng Supertest với `request(app)` khi framework export app mà không listen; với API chạy thật, test cần port ephemeral và teardown server trong `finally` để không giữ process mở.
 
 ## 4. Trade-off & Best practices

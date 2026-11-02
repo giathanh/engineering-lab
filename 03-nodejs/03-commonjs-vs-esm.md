@@ -15,11 +15,11 @@ CommonJS là module system của Node truyền thống. Mỗi file được bọ
 
 ESM là chuẩn module của JavaScript. Các import/export được phân tích tĩnh, binding được live (giá trị export có thể cập nhật nhưng binding vẫn giữ liên kết), và module có thể dùng top-level `await`. Dependency graph được tải/khởi tạo theo quy tắc ESM thay vì chỉ gọi hàm đồng bộ như CJS.
 
-Node xác định format bằng phần mở rộng (`.mjs`/`.cjs`) và trường `type` trong `package.json`: `.mjs` luôn là ESM, `.cjs` luôn là CJS; `.js` theo `type` của package scope gần nhất. Với package mới, khai báo rõ `"type": "module"` nếu dùng ESM để tooling và runtime nhất quán.
+Node xác định format bằng phần mở rộng (`.mjs`/`.cjs`) và trường `type` trong `package.json`: `.mjs` luôn là ESM, `.cjs` luôn là CJS; `.js` theo `type` của package scope gần nhất khi có khai báo rõ. Trên Node 22.7+, file `.js` mơ hồ không có `type` còn có syntax detection; nên khai báo `type` để tránh phụ thuộc suy đoán. Với package mới, khai báo rõ `"type": "module"` nếu dùng ESM để tooling và runtime nhất quán.
 
 Resolution của ESM hỗ trợ `import` tương đối với phần mở rộng file rõ ràng, ví dụ `./helper.js`; CJS có quy tắc tìm kiếm legacy như thử phần mở rộng và `index` trong một số trường hợp. ESM không có sẵn `__dirname`/`__filename`; có thể tạo URL-based path bằng `fileURLToPath(import.meta.url)`. `createRequire(import.meta.url)` là cầu nối có chủ đích khi ESM cần tải dependency CJS.
 
-Interoperability không có nghĩa hai định dạng hoàn toàn thay thế nhau. ESM có thể import CJS, thường nhận `module.exports` làm default export; named exports suy đoán từ CJS có thể không đáng tin với export động. CJS có thể `import()` ESM bất đồng bộ; không nên giả định `require()` synchronous sẽ tải mọi ESM package. Kiểm tra `exports` map trong `package.json`, vì package có thể cung cấp entry point khác nhau cho `import` và `require`.
+Interoperability không có nghĩa hai định dạng hoàn toàn thay thế nhau. ESM có thể import CJS, thường nhận `module.exports` làm default export; named exports suy đoán từ CJS có thể không đáng tin với export động. CJS có thể `import()` ESM bất đồng bộ; trên các bản Node 22 hỗ trợ `require(esm)`, require cũng có thể nạp ESM graph đồng bộ không có top-level await; không nên giả định `require()` synchronous sẽ tải mọi ESM package. Kiểm tra `exports` map trong `package.json`, vì package có thể cung cấp entry point khác nhau cho `import` và `require`.
 
 ## 3. Code ví dụ
 

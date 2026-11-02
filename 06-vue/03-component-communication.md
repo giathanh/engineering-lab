@@ -48,7 +48,6 @@ Parent dùng `<SearchInput v-model="query" label="Search" />`; `query` vẫn thu
 - Không mutate nested prop; nếu cần draft editing, copy vào local state có sync/reset policy tường minh.
 - Accessibility/semantic HTML vẫn thuộc trách nhiệm component contract; expose label/description/keyboard behavior.
 - Với high-frequency cross-tree state, cân nhắc Pinia/external store thay provide mutable object không có lifecycle.
-- Với high-frequency cross-tree state, cân nhắc Pinia/external store thay provide mutable object không có lifecycle.
 - Khi thiết kế component library, version props/events cùng accessibility behavior và document whether events fire before/after internal state changes. Consumer tests nên xác nhận public contract để implementation có thể refactor an toàn.
 
 ## 5. Lỗi thường gặp / Pitfalls
