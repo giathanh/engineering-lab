@@ -83,7 +83,7 @@ if (json_validate('{"status":"paid"}')) { // PHP 8.3: validate without decoding.
 <details>
 <summary><b>Q1. `match` khác `switch` thế nào?</b></summary>
 
-`match` là expression trả giá trị, so sánh strict, không fall through và yêu cầu xử lý mọi trường hợp hoặc có default. `switch` có semantics loose comparison và fall-through nếu thiếu `break`.
+`match` là expression trả giá trị, so sánh strict (`===`), không fall through; nếu không nhánh nào khớp (và không có `default`) thì ném `UnhandledMatchError` lúc runtime — PHP không kiểm tra exhaustiveness lúc compile. `switch` có semantics loose comparison và fall-through nếu thiếu `break`.
 
 </details>
 

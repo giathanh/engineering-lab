@@ -115,6 +115,5 @@ Browser tự gửi cookie nên CSRF protection cần thiết; bearer token do JS
 - [OWASP: Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html)
 - [jose: JavaScript JOSE library](https://github.com/panva/jose)
 
-- [RFC 9700: OAuth 2.0 Security BCP](https://www.rfc-editor.org/rfc/rfc9700.html)
 
 - [jose: JWTVerifyOptions](https://github.com/panva/jose/blob/main/docs/jwt/verify/interfaces/JWTVerifyOptions.md)

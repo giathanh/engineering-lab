@@ -12,7 +12,7 @@
 
 ## 2. Khái niệm cốt lõi
 
-Laravel front controller (`public/index.php`) nạp Composer autoloader và bootstrap app từ `bootstrap/app.php`. Application bootstraps providers/configuration, rồi request đi qua HTTP kernel pipeline, global middleware, router, route middleware, controller/action, response middleware và emitter. Exact internal methods thay đổi theo phiên bản, nhưng mental model quan trọng là dependency graph được container compose và request đi qua pipeline.
+Laravel front controller (`public/index.php`) nạp Composer autoloader và bootstrap app từ `bootstrap/app.php`. Application bootstraps providers/configuration, rồi request đi qua HTTP kernel pipeline, global middleware, router, route middleware, controller/action, middleware xử lý response trên đường về, gửi response (`$response->send()`) rồi chạy terminable middleware (`terminate`). Exact internal methods thay đổi theo phiên bản, nhưng mental model quan trọng là dependency graph được container compose và request đi qua pipeline.
 
 Container có thể tự resolve concrete class qua reflection khi constructor dependencies cũng resolve được (autowiring). Interface cần binding rõ ràng. `bind` tạo instance mới mỗi lần resolve; `singleton` giữ instance trong container; scoped lifecycle của framework phù hợp state theo request/job trong long-lived workers nếu được quản lý đúng. Không dùng singleton cho state mutable theo user/request.
 

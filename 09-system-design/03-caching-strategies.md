@@ -102,8 +102,8 @@ Chọn fail-open/closed theo data/risk; giới hạn origin concurrency, circuit
 
 ## 8. Tài liệu tham khảo
 
-- [AWS: Caching best practices](https://aws.github.io/builders-library/caching-challenges-and-strategies/)
+- [Amazon Builders' Library: Caching challenges and strategies](https://aws.amazon.com/builders-library/caching-challenges-and-strategies/)
 - [Cloudflare: Cache-Control](https://developers.cloudflare.com/cache/concepts/cache-control/)
 - [Redis: Client-side caching](https://redis.io/docs/latest/develop/reference/client-side-caching/)
-- [Google SRE: Caching](https://sre.google/sre-book/handling-overload/)
+- [Google SRE: Handling Overload](https://sre.google/sre-book/handling-overload/)
 

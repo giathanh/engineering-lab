@@ -111,5 +111,5 @@ Dùng endpoint/workload thực, cùng PHP/OPcache/database/network/config, đo t
 - [Symfony Components](https://symfony.com/components)
 - [Symfony Dependency Injection](https://symfony.com/doc/current/components/dependency_injection.html)
 - [Laravel Service Container](https://laravel.com/docs/11.x/container)
-- [Laravel: Using Symfony Components](https://laravel.com/docs/11.x/requests)
+- [Laravel 11: HTTP Requests (`Illuminate\Http\Request` kế thừa Symfony HttpFoundation Request)](https://laravel.com/docs/11.x/requests)
 

@@ -19,7 +19,7 @@ Node xác định format bằng phần mở rộng (`.mjs`/`.cjs`) và trường
 
 Resolution của ESM hỗ trợ `import` tương đối với phần mở rộng file rõ ràng, ví dụ `./helper.js`; CJS có quy tắc tìm kiếm legacy như thử phần mở rộng và `index` trong một số trường hợp. ESM không có sẵn `__dirname`/`__filename`; có thể tạo URL-based path bằng `fileURLToPath(import.meta.url)`. `createRequire(import.meta.url)` là cầu nối có chủ đích khi ESM cần tải dependency CJS.
 
-Interoperability không có nghĩa hai định dạng hoàn toàn thay thế nhau. ESM có thể import CJS, thường nhận `module.exports` làm default export; named exports suy đoán từ CJS có thể không đáng tin với export động. CJS có thể `import()` ESM bất đồng bộ; trên các bản Node 22 hỗ trợ `require(esm)`, require cũng có thể nạp ESM graph đồng bộ không có top-level await; không nên giả định `require()` synchronous sẽ tải mọi ESM package. Kiểm tra `exports` map trong `package.json`, vì package có thể cung cấp entry point khác nhau cho `import` và `require`.
+Interoperability không có nghĩa hai định dạng hoàn toàn thay thế nhau. ESM có thể import CJS, thường nhận `module.exports` làm default export; named exports suy đoán từ CJS có thể không đáng tin với export động. CJS có thể `import()` ESM bất đồng bộ; từ Node 22.12 (và 20.19) `require(esm)` được bật mặc định, require có thể nạp ESM graph đồng bộ không có top-level await (gặp top-level await sẽ ném `ERR_REQUIRE_ASYNC_MODULE`); không nên giả định `require()` synchronous sẽ tải mọi ESM package. Kiểm tra `exports` map trong `package.json`, vì package có thể cung cấp entry point khác nhau cho `import` và `require`.
 
 ## 3. Code ví dụ
 

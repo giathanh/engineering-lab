@@ -39,7 +39,7 @@ await Promise.all([withdraw(80), withdraw(80)]);
 console.log(balance); // 20: both checks pass in this exact example; one update is lost.
 ```
 
-Trong ứng dụng thật, sửa tại nơi sở hữu state bằng conditional update, ví dụ SQL `UPDATE accounts SET balance = balance - :amount WHERE id = :id AND balance >= :amount` và kiểm tra affected rows. Nếu còn ghi ledger, ghép update và ledger trong một transaction. Mutex local không bảo vệ được invariant giữa nhiều process. In-memory mutex chỉ giải quyết race trong một process.
+Trong ứng dụng thật, sửa tại nơi sở hữu state bằng conditional update, ví dụ SQL `UPDATE accounts SET balance = balance - :amount WHERE id = :id AND balance >= :amount` và kiểm tra affected rows. Nếu còn ghi ledger, ghép update và ledger trong một transaction. In-memory mutex chỉ giải quyết race trong một process, không bảo vệ được invariant giữa nhiều process/instance.
 
 ## 4. Trade-off & Best practices
 

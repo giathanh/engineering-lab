@@ -119,7 +119,7 @@ Workers tranh chấp CPU/memory hoặc vượt DB/API connection capacity, gây 
 ## 8. Tài liệu tham khảo
 
 - [Laravel Octane](https://laravel.com/docs/11.x/octane)
-- [OpenSwoole documentation](https://openswoole.com/docs)
+- [OpenSwoole documentation (fork của Swoole; API/extension khác Swoole gốc)](https://openswoole.com/docs)
 - [RoadRunner documentation](https://docs.roadrunner.dev/)
 - [FrankenPHP documentation](https://frankenphp.dev/docs/)
 - [PHP: hrtime](https://www.php.net/manual/en/function.hrtime.php)

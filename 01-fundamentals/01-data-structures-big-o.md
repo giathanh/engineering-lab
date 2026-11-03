@@ -106,7 +106,7 @@ Big-O bỏ constant và hành vi runtime/hardware. Với n nhỏ, cache locality
 <details>
 <summary><b>Q6. Phân tích complexity của hai vòng lặp lồng nhau thế nào?</b></summary>
 
-Không kết luận máy móc là O(n²); xem số vòng thực tế. Nếu inner loop giảm n theo một nửa thì tổng có thể O(n log n); nếu mỗi cặp được duyệt thì O(n²).
+Không kết luận máy móc là O(n²); xem số vòng thực tế. Nếu biến đếm của inner loop nhân/chia đôi mỗi bước (chạy log n lần) thì tổng là O(n log n); nếu inner loop chạy n/2, n/4, … tính trên toàn bộ thuật toán thì tổng chỉ O(n); nếu mỗi cặp được duyệt thì O(n²).
 
 </details>
 

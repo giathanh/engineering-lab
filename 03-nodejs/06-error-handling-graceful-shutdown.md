@@ -16,7 +16,7 @@ Lỗi nên được phân loại theo khả năng phục hồi và boundary. L�
 
 Trong Promise chain, rejection không được xử lý sẽ lan đến handler kế tiếp; `await` ném rejection vào `try/catch`. Tuy nhiên, `try/catch` không bắt exception xảy ra trong callback chạy sau đó nếu callback không được nối vào Promise hiện tại. Tại boundary callback-based, dùng API Promise hoặc bọc callback đúng cách.
 
-`uncaughtException` handler ngăn Node thoát mặc định, nhưng không bảo đảm heap/invariants còn an toàn. Node docs khuyến nghị dùng handler để cleanup đồng bộ cuối cùng rồi shutdown, còn restart do external monitor thực hiện. `unhandledRejection` policy có thể thay đổi theo phiên bản/runtime flags; ứng dụng nên có logging và chính sách rõ thay vì dựa vào default.
+`uncaughtException` handler ngăn Node thoát mặc định, nhưng không bảo đảm heap/invariants còn an toàn. Node docs khuyến nghị dùng handler để cleanup đồng bộ cuối cùng rồi shutdown, còn restart do external monitor thực hiện. `unhandledRejection` policy phụ thuộc phiên bản/runtime flags (từ Node 15, mặc định `--unhandled-rejections=throw`: rejection không có handler được ném như uncaught exception và làm process crash nếu không có handler `unhandledRejection`); ứng dụng nên có logging và chính sách rõ thay vì dựa vào default.
 
 Graceful shutdown là giao thức của ứng dụng và hạ tầng. Khi nhận `SIGTERM`, service đánh dấu readiness false, dừng accept request mới, chờ request đang chạy trong deadline, đóng queue consumer và DB connections, rồi thoát. Deadline phải nhỏ hơn termination grace period của container/process manager.
 

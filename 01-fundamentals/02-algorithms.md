@@ -54,7 +54,7 @@ Mỗi phần tử được thêm/bỏ tối đa một lần nên O(n) thời gia
 - Binary search: nêu invariant (ví dụ vùng còn khả năng chứa answer), xử lý duplicate và biên rỗng; test `0`, `1`, answer đầu/cuối, không tồn tại.
 - BFS/DFS: dùng visited khi graph có cycle; xác định directed/undirected và xử lý node không liên thông. Với BFS shortest path, đánh dấu visited khi enqueue để tránh queue trùng.
 - DP: đặt tên state theo nghĩa nghiệp vụ, viết recurrence trước code; thử memoized recursion trước rồi bottom-up/space optimization nếu cần.
-- Với sort comparator, bảo đảm thứ tự nhất quán/transitive và xử lý equality; dùng comparator thay vì tự trừ giá trị nếu có nguy cơ overflow ở ngôn ngữ số nguyên fixed-width.
+- Với sort comparator, bảo đảm thứ tự nhất quán/transitive và xử lý equality; trong comparator, dùng phép so sánh (`<`, `>`) thay vì trừ hai giá trị nếu có nguy cơ overflow ở ngôn ngữ số nguyên fixed-width.
 - Trình bày cả thời gian và memory, bao gồm output, call stack và cấu trúc phụ.
 
 ## 5. Lỗi thường gặp / Pitfalls
@@ -71,7 +71,7 @@ Mỗi phần tử được thêm/bỏ tối đa một lần nên O(n) thời gia
 <details>
 <summary><b>Q1. Khi nào dùng BFS thay vì DFS?</b></summary>
 
-BFS khi cần shortest path theo số cạnh trong graph không trọng số hoặc duyệt theo tầng. DFS phù hợp traversal, cycle/component và backtracking; với trọng số dương cần thuật toán như Dijkstra.
+BFS khi cần shortest path theo số cạnh trong graph không trọng số hoặc duyệt theo tầng. DFS phù hợp traversal, cycle/component và backtracking; với trọng số không âm cần thuật toán như Dijkstra; có trọng số âm thì cần Bellman-Ford.
 
 </details>
 

@@ -100,7 +100,7 @@ Theo timebox/rubric đã clarify. Nộp vertical slice chất lượng và docum
 
 ## 8. Tài liệu tham khảo
 
-- [Pramp: Interview practice](https://www.pramp.com/)
+- [Pramp: Interview practice (đã sáp nhập vào Exponent; pramp.com chuyển sang Exponent Practice)](https://www.pramp.com/)
 - [LeetCode Interview Crash Course](https://leetcode.com/explore/interview/card/)
 - [GitHub: Building good README files](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes)
 - [Google: Technical interview preparation](https://careers.google.com/how-we-hire/)

@@ -98,6 +98,6 @@ Có, điều chỉnh summary/order/keywords dựa role thật, nhưng giữ fact
 
 - [MIT CAPD: Resume guide](https://capd.mit.edu/resources/resumes/)
 - [Harvard: Resume and cover letter guide](https://careerservices.fas.harvard.edu/resources/create-a-resume-cv-or-cover-letter/)
-- [Google: Use metrics in your resume](https://www.google.com/about/careers/applications/how-we-hire/)
+- [Google Careers: How we hire (gợi ý viết resume theo impact)](https://www.google.com/about/careers/applications/how-we-hire/)
 - [Europass CV](https://europa.eu/europass/en/create-europass-cv)
 
